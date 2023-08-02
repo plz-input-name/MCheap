@@ -1,0 +1,19 @@
+{
+  "name": "MCheap-Server",
+  "version": "0.0.0",
+  "description": "MZ 세대를 위한 합리적 중고거래 플랫폼",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "prepare": "cd .. && husky install backend/.husky",
+    "start": "node index.js"
+  },
+  "devDependencies": {
+    "eslint": "^8.46.0",
+    "eslint-config-prettier": "^8.9.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.3",
+    "prettier": "^3.0.0"
+  }
+}
