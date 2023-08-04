@@ -95,8 +95,6 @@ class MainActivity : AppCompatActivity() {
             }
             Log.d("중고나라",body.text())
 
-
-
             CoroutineScope(Dispatchers.IO).async {
                 body = Jsoup.connect("https://www.daangn.com/search/"+find+"/more/flea_market?page=1")
                     .ignoreContentType(true).get()
