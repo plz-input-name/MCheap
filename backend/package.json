@@ -15,8 +15,5 @@
     "husky": "^8.0.3",
     "lint-staged": "^13.2.3",
     "prettier": "^3.0.0"
-  },
-  "dependencies": {
-    "selenium-webdriver": "^4.11.1"
   }
 }
