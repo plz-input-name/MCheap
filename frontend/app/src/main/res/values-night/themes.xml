@@ -1,6 +1,10 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
+<<<<<<< HEAD
+    <style name="Theme.Inputname" parent="Theme.AppCompat.DayNight.DarkActionBar">
+=======
     <style name="Theme.Inputname" parent="Theme.MaterialComponents.DayNight.DarkActionBar">
+>>>>>>> f6b66b9baddb6a0d6fbda9777782bb0f3b6a8e79
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/purple_200</item>
         <item name="colorPrimaryVariant">@color/purple_700</item>
@@ -12,5 +16,9 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+<<<<<<< HEAD
+        <item name="windowNoTitle">true</item>
+=======
+>>>>>>> f6b66b9baddb6a0d6fbda9777782bb0f3b6a8e79
     </style>
 </resources>

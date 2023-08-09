@@ -12,5 +12,9 @@
         <!-- Status bar color. -->
         <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
+<<<<<<< HEAD
+        <item name="windowNoTitle">true</item>
+=======
+>>>>>>> f6b66b9baddb6a0d6fbda9777782bb0f3b6a8e79
     </style>
 </resources>

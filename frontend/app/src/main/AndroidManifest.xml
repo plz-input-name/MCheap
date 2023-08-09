@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+<<<<<<< HEAD
+
+    <uses-permission android:name="android.permission.INTERNET" />
+
+=======
     <uses-permission android:name="android.permission.INTERNET"></uses-permission>
+>>>>>>> f6b66b9baddb6a0d6fbda9777782bb0f3b6a8e79
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -11,7 +17,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Inputname"
         tools:targetApi="31">
+<<<<<<< HEAD
+        <activity
+            android:name=".SearchResultActivity"
+            android:exported="false" />
+=======
 
+>>>>>>> f6b66b9baddb6a0d6fbda9777782bb0f3b6a8e79
         <activity
             android:name=".MainActivity"
             android:exported="true">
