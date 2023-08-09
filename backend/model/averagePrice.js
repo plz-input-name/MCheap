@@ -1,13 +1,18 @@
 module.exports = {
-  async find(conn, keyword) {
+  async find(conn, keyword, size) {
     return await conn.execute(
       `
       SELECT
         *
       FROM
-        average_price;
+        average_price
+      WHERE
+        keyword LIKE ?
+      ORDER BY
+        colleted_at
+      LIMIT ?;
       `,
-      [keyword]
+      [keyword, size]
     );
   },
   async add(conn, keyword, carrot, thunder, joongna) {
