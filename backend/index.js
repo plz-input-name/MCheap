@@ -4,8 +4,12 @@ const createError = require("http-errors");
 const express = require("express");
 const app = express();
 
+const getStatistic = require("./routes/statistic");
+
 app.use(logger("common"));
 app.use(express.json());
+
+app.use("/statistic", getStatistic);
 
 // catch 404
 app.use((_req, _res, next) => {
