@@ -4,21 +4,20 @@ const createError = require("http-errors");
 const express = require("express");
 const app = express();
 
-const getStatistic = require("./routes/statistic");
+const statisticRouter = require("./routes/statistic");
 
 app.use(logger("common"));
 app.use(express.json());
 
-app.use("/statistic", getStatistic);
+app.use("/statistics", statisticRouter);
 
 // catch 404
 app.use((_req, _res, next) => {
-  console.log("test");
   return next(createError(404, "Not Found"));
 });
 
 // error handler
-app.use((err, req, res, _next) => {
+app.use((err, _req, res, _next) => {
   return res.status(err.status).json({ error: err.message });
 });
 

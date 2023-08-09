@@ -19,7 +19,7 @@ module.exports = {
     return await conn.execute(
       `
       INSERT INTO
-        average_price (keyword, carrot, thunder, joonga)
+        average_price (keyword, carrot, thunder, joongna)
       VALUES
         (?, ?, ?, ?);
       `,
