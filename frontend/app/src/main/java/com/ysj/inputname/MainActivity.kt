@@ -1,30 +1,12 @@
 package com.ysj.inputname
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.SearchView
 import androidx.activity.result.contract.ActivityResultContracts
 import com.ysj.inputname.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
-import android.os.Bundle
-import android.util.Log
-
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
-import okhttp3.*
-import org.json.JSONObject
-import org.jsoup.Jsoup
-
-import java.io.IOException
-import java.text.SimpleDateFormat
-import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.math.log
-
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
 
