@@ -7,7 +7,7 @@ module.exports = {
       FROM
         average_price
       WHERE
-        keyword LIKE ?
+        keyword = ?
       ORDER BY
         colleted_at
       LIMIT ?;
