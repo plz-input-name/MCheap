@@ -9,4 +9,5 @@ const pool = mysql.createPool({
   database: "mcheap",
   dateStrings: true,
 });
-module.exports = pool;
+
+module.exports = { pool, search: require("./search") };

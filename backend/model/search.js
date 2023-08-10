@@ -5,11 +5,11 @@ module.exports = {
       SELECT
         *
       FROM
-        average_price
+        search
       WHERE
         keyword = ?
       ORDER BY
-        colleted_at
+        collected_at
       LIMIT ?;
       `,
       [keyword, size]
@@ -19,11 +19,27 @@ module.exports = {
     return await conn.execute(
       `
       INSERT INTO
-        average_price (keyword, carrot, thunder, joongna)
+        search (keyword, carrot, thunder, joongna)
       VALUES
         (?, ?, ?, ?);
       `,
       [keyword, carrot, thunder, joongna]
+    );
+  },
+  async latestKeywords(conn, size) {
+    return await conn.execute(
+      `
+      SELECT DISTINCT
+        keyword, 
+        collected_at
+      FROM
+        search
+      ORDER BY
+        collected_at DESC
+      LIMIT
+        ?;      
+      `,
+      [size]
     );
   },
 };
