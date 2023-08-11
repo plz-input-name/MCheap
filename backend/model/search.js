@@ -9,7 +9,7 @@ module.exports = {
       WHERE
         keyword = ?
       ORDER BY
-        collected_at
+        collected_at DESC
       LIMIT ?;
       `,
       [keyword, size]
@@ -29,15 +29,17 @@ module.exports = {
   async latestKeywords(conn, size) {
     return await conn.execute(
       `
-      SELECT DISTINCT
-        keyword, 
-        collected_at
+      SELECT
+        keyword,
+        MAX(collected_at) as last_collected_at
       FROM
         search
+      GROUP BY
+        keyword
       ORDER BY
-        collected_at DESC
+        last_collected_at DESC
       LIMIT
-        ?;      
+        ?;  
       `,
       [size]
     );

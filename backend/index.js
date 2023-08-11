@@ -8,6 +8,7 @@ app.use(logger("common"));
 app.use(express.json());
 
 app.use("/statistics", require("./routes/statistics"));
+app.use("/keywords", require("./routes/keywords"));
 
 // catch 404
 app.use((_req, _res, next) => {
@@ -16,6 +17,8 @@ app.use((_req, _res, next) => {
 
 // error handler
 app.use((err, _req, res, _next) => {
+  console.error(err.message);
+
   return res
     .status(err.status ?? 500)
     .json({ error: err.message ?? "Internal Server Error" });
