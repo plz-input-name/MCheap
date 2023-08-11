@@ -9,7 +9,6 @@ import com.ysj.inputname.databinding.ActivityMainBinding
 import androidx.appcompat.app.AppCompatActivity
 class MainActivity : AppCompatActivity() {
     lateinit var binding: ActivityMainBinding
-
     val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
 
     }
@@ -17,8 +16,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-
-
 
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {

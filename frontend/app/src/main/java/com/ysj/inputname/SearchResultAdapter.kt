@@ -41,5 +41,16 @@ class SearchResultAdapter(val data:ArrayList<itemData>): RecyclerView.Adapter<Se
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Glide.with(parentView).load(data[position].imgLink).into(holder.binding.imageView)
         holder.binding.textView9.text = data[position].name
+        when(data[position].origin){
+            "carrot"->{
+                holder.binding.imageView2.setImageResource(R.drawable.carrot)
+            }
+            "thunder"->{
+                holder.binding.imageView2.setImageResource(R.drawable.thunder)
+            }
+            "joongo"->{
+                holder.binding.imageView2.setImageResource(R.drawable.joongo)
+            }
+        }
     }
 }
