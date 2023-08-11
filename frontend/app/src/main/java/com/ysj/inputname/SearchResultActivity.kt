@@ -41,7 +41,7 @@ class SearchResultActivity : AppCompatActivity() {
     lateinit var transRight:Animation
     val server_url = "https://localhost"
     var data = "dlCzX-w5lhi2KaQ1JQhvG"
-    var size = 5
+    var size = 10
     var viewList = ArrayList<View>()
 
     lateinit var body: Document
@@ -70,9 +70,7 @@ class SearchResultActivity : AppCompatActivity() {
 
         binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
             override fun onSwipeLeft() {
-
                 Log.d("test","LEFT")
-
                 val fragment = supportFragmentManager.beginTransaction()
                 fragment.replace(R.id.frameLayout, itemStatFragment())
                 fragment.commit()
@@ -87,6 +85,7 @@ class SearchResultActivity : AppCompatActivity() {
         })
         val intent = getIntent()
         val str = intent.getStringExtra("search")
+        binding.searchView2.setQuery(str,false)
         if(str != null){
             getData(str)
         }
@@ -100,6 +99,7 @@ class SearchResultActivity : AppCompatActivity() {
                     find = ""
                     return false
                 }
+
                 find = query.toString()
                 getData(find)
                 return false
@@ -114,6 +114,7 @@ class SearchResultActivity : AppCompatActivity() {
 
 
     fun getData(find:String){
+        Log.d("test",find)
         val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         val fragment = supportFragmentManager.beginTransaction()
         binding.searchresview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
@@ -205,7 +206,7 @@ class SearchResultActivity : AppCompatActivity() {
             }
 
             var carrotItems = arrayListOf<itemData>()
-            for (j: Int in 1 until size / 10) {
+            for (j: Int in 1 until size / 10 + 1) {
                 body =
                     Jsoup.connect("https://www.daangn.com/search/" + find + "/more/flea_market?page=" + j.toString())
                         .ignoreContentType(true).get()
@@ -251,22 +252,46 @@ class SearchResultActivity : AppCompatActivity() {
                         price = price.replace(" ", "")
                     }
                     val _intPrice = price.toInt()
+
+                    //getTimeStamp
+                    tmp2 = body.select("body > article:nth-child(1) > a").attr("href")
+                    body = Jsoup.connect("https://www.daangn.com"+tmp2).get()
+                    tmp2 = body.select("#article-category > time").text()
+                    var timestamp = 0
+                    if(tmp2.contains("시간")){
+                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
+                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*3600000).toInt()
+                    }
+                    else if(tmp2.contains("분")){
+                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
+                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*60000).toInt()
+                    }
+                    else if(tmp2.contains("초")){
+                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
+                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*1000).toInt()
+                    }
+                    else if(tmp2.contains("일")){
+                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
+                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*86400000).toInt()
+                    }
                     carrotItems.add(itemData(title, _intPrice, imglink, 0, location, "0","carrot"))
                 }
             }
             post(carrotItems, thunderItems, joongoItems, find, size)
-
             carrotItems.addAll(thunderItems)
             carrotItems.addAll(joongoItems)
 
-            Log.d("test",carrotItems.toString())
+            val comp : Comparator<itemData> = compareBy{
+                it.timeStamp
+            }
+            val finalList = carrotItems.sortedWith(comp)
             runOnUiThread {
                 resAdapter = SearchResultAdapter(carrotItems)
                 resAdapter.itemClickListener = object:SearchResultAdapter.OnItemClickListener{
                     override fun OnItemClick(item: itemData) {
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.button.visibility = View.INVISIBLE
-                        fragment.replace(R.id.frameLayout, itemInfoFragment())
+                        fragment.replace(R.id.frameLayout, itemInfoFragment()).addToBackStack(null)
                         fragment.commit()
                     }
                 }
