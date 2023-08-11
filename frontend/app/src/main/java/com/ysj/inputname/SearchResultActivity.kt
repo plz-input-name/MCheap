@@ -116,7 +116,6 @@ class SearchResultActivity : AppCompatActivity() {
     fun getData(find:String){
         Log.d("test",find)
         val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
-        val fragment = supportFragmentManager.beginTransaction()
         binding.searchresview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.searchresview.addItemDecoration(decoration)
 
@@ -211,30 +210,33 @@ class SearchResultActivity : AppCompatActivity() {
                     Jsoup.connect("https://www.daangn.com/search/" + find + "/more/flea_market?page=" + j.toString())
                         .ignoreContentType(true).get()
                 var i = 0
-                while (true) {
+                lateinit var body2:Document
+                while (true){
+                    body2 = body
                     i++
                     //title
                     var tmp =
-                        body.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > div > span.article-title")
+                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > div > span.article-title")
 
                     if (tmp.isEmpty()) {
                         break
                     }
+
                     val title = tmp.text()
                     //imglink
                     var tmp2 =
-                        body.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
+                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
                             .attr("src").toString()
                     val imglink = tmp2
 
                     //location
                     tmp =
-                        body.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
+                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
                     val location = arrayListOf<String>()
                     location.add(tmp.text())
                     //price
                     tmp =
-                        body.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
+                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
                     var price = tmp.text()
                     if (price.contains(",")) {
                         price = price.replace(",", "")
@@ -254,9 +256,9 @@ class SearchResultActivity : AppCompatActivity() {
                     val _intPrice = price.toInt()
 
                     //getTimeStamp
-                    tmp2 = body.select("body > article:nth-child(1) > a").attr("href")
-                    body = Jsoup.connect("https://www.daangn.com"+tmp2).get()
-                    tmp2 = body.select("#article-category > time").text()
+                    tmp2 = body2.select("body > article:nth-child(1) > a").attr("href")
+                    body2 = Jsoup.connect("https://www.daangn.com"+tmp2).get()
+                    tmp2 = body2.select("#article-category > time").text()
                     var timestamp = 0
                     if(tmp2.contains("시간")){
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
@@ -274,10 +276,14 @@ class SearchResultActivity : AppCompatActivity() {
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
                         timestamp = (System.currentTimeMillis() - tmp2.toInt()*86400000).toInt()
                     }
-                    carrotItems.add(itemData(title, _intPrice, imglink, 0, location, "0","carrot"))
+                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp, location, "0","carrot"))
                 }
             }
             post(carrotItems, thunderItems, joongoItems, find, size)
+
+            Log.d("sizeC",carrotItems.size.toString())
+            Log.d("sizeT",thunderItems.size.toString())
+            Log.d("sizeJ",joongoItems.size.toString())
             carrotItems.addAll(thunderItems)
             carrotItems.addAll(joongoItems)
 
@@ -289,6 +295,7 @@ class SearchResultActivity : AppCompatActivity() {
                 resAdapter = SearchResultAdapter(carrotItems)
                 resAdapter.itemClickListener = object:SearchResultAdapter.OnItemClickListener{
                     override fun OnItemClick(item: itemData) {
+                        val fragment = supportFragmentManager.beginTransaction()
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.button.visibility = View.INVISIBLE
                         fragment.replace(R.id.frameLayout, itemInfoFragment()).addToBackStack(null)
