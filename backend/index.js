@@ -2,10 +2,12 @@ require("dotenv").config();
 const logger = require("morgan");
 const createError = require("http-errors");
 const express = require("express");
+const bodyParser = require("body-parser");
 const app = express();
 
 app.use(logger("common"));
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 app.use("/statistics", require("./routes/statistics"));
 app.use("/keywords", require("./routes/keywords"));
