@@ -23,9 +23,28 @@ exports.makeStatistics = async (req, res, next) => {
   const { carrot, thunder, joongna } = req.body;
   const conn = await pool.getConnection();
 
+  const total = [...carrot, ...thunder, ...joongna].sort((a, b) => a - b);
+  const q1 = total[Math.floor(total.length * 0.25)];
+  const q3 = total[Math.ceil(total.length * 0.75)];
+  const iqr = q3 - q1;
+  const THRESHOLD = 1.5;
+  const max = q3 + iqr * THRESHOLD;
+  const min = q1 - iqr * THRESHOLD;
+
+  const calcAvg = (arr) => {
+    const filtered = arr.filter((price) => price < max && price > min);
+    const sum = filtered.reduce((sum, curr) => (sum += curr));
+    return Math.ceil(sum / filtered.length);
+  };
+
   try {
-    // 이탈값 제거 후 평균값 계산 필요
-    search.add(conn, keyword, carrot[0], thunder[0], joongna[0]);
+    search.add(
+      conn,
+      keyword,
+      calcAvg(carrot),
+      calcAvg(thunder),
+      calcAvg(joongna)
+    );
     return res.status(204).send();
   } catch (err) {
     console.error(err.message);
