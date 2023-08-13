@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ysj.inputname.databinding.ItemrowBinding
+import java.text.DecimalFormat
 
 class SearchResultAdapter(val data:ArrayList<itemData>): RecyclerView.Adapter<SearchResultAdapter.ViewHolder>() {
     lateinit var parentView: View
@@ -41,6 +42,10 @@ class SearchResultAdapter(val data:ArrayList<itemData>): RecyclerView.Adapter<Se
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         Glide.with(parentView).load(data[position].imgLink).into(holder.binding.imageView)
         holder.binding.textView9.text = data[position].name
+        val dFormat = DecimalFormat("#,###")
+        val price = dFormat.format(data[position].price)
+        holder.binding.textView10.text = price
+
         when(data[position].origin){
             "carrot"->{
                 holder.binding.imageView2.setImageResource(R.drawable.carrot)

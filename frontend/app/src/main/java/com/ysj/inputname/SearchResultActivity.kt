@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.*
+import org.json.JSONArray
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,6 +33,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 class SearchResultActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchResultBinding
@@ -39,17 +41,23 @@ class SearchResultActivity : AppCompatActivity() {
 
     lateinit var transLeft:Animation
     lateinit var transRight:Animation
-    val server_url = "https://localhost"
+    val server_url = "http://52.78.214.149:3000"
     var data = "dlCzX-w5lhi2KaQ1JQhvG"
     var size = 10
     var viewList = ArrayList<View>()
+    var isStatFragOn = false
 
     lateinit var body: Document
     lateinit var resData:String
 
+    override fun onResume() {
+        binding.progressBar.visibility = View.VISIBLE
+        super.onResume()
+    }
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         transLeft = AnimationUtils.loadAnimation(this,R.anim.translate_left)
         transRight = AnimationUtils.loadAnimation(this,R.anim.translate_right)
         transRight.setAnimationListener(object: AnimationListener{
@@ -59,6 +67,8 @@ class SearchResultActivity : AppCompatActivity() {
 
             override fun onAnimationEnd(animation: Animation?) {
                 binding.frameLayout.visibility = View.INVISIBLE
+                binding.button.visibility = View.VISIBLE
+                binding.floatingActionButton.isClickable = true
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
@@ -67,25 +77,53 @@ class SearchResultActivity : AppCompatActivity() {
         })
         
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
+        binding.progressBar.visibility = View.VISIBLE
 
-        binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
-            override fun onSwipeLeft() {
-                Log.d("test","LEFT")
+        val intent = getIntent()
+        val str = intent.getStringExtra("search")
+        binding.searchView2.setQuery(str,false)
+
+        binding.floatingActionButton.setOnClickListener {
+            if(!isStatFragOn) {
                 val fragment = supportFragmentManager.beginTransaction()
-                fragment.replace(R.id.frameLayout, itemStatFragment())
+                val itemStatFragment = itemStatFragment()
+                var bundle = Bundle()
+                bundle.putString("search", str)
+                itemStatFragment.arguments = bundle
+                fragment.replace(R.id.frameLayout, itemStatFragment)
                 fragment.commit()
                 binding.frameLayout.startAnimation(transLeft)
                 binding.frameLayout.visibility = View.VISIBLE
                 binding.button.visibility = View.INVISIBLE
+                binding.floatingActionButton.setImageResource(R.drawable.leftarrow)
+                isStatFragOn = true
+            }
+            else{
+                binding.frameLayout.startAnimation(transRight)
+                isStatFragOn = false
+                binding.floatingActionButton.isClickable = false
+                binding.floatingActionButton.setImageResource(R.drawable.rightarrow)
+            }
+        }
+
+        binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
+            override fun onSwipeLeft() {
+                val fragment = supportFragmentManager.beginTransaction()
+                val itemStatFragment = itemStatFragment()
+                var bundle = Bundle()
+                bundle.putString("search", str)
+                itemStatFragment.arguments = bundle
+                fragment.replace(R.id.frameLayout, itemStatFragment)
+                fragment.commit()
+                binding.frameLayout.startAnimation(transLeft)
+                binding.frameLayout.visibility = View.VISIBLE
+                binding.button.visibility = View.INVISIBLE
+                isStatFragOn = true
             }
             override fun onSwipeRight() {
-                Log.d("test","Right")
                 binding.frameLayout.startAnimation(transRight)
             }
         })
-        val intent = getIntent()
-        val str = intent.getStringExtra("search")
-        binding.searchView2.setQuery(str,false)
         if(str != null){
             getData(str)
         }
@@ -114,7 +152,6 @@ class SearchResultActivity : AppCompatActivity() {
 
 
     fun getData(find:String){
-        Log.d("test",find)
         val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.searchresview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.searchresview.addItemDecoration(decoration)
@@ -221,20 +258,21 @@ class SearchResultActivity : AppCompatActivity() {
                     if (tmp.isEmpty()) {
                         break
                     }
-
+                    body2 = body
                     val title = tmp.text()
                     //imglink
                     var tmp2 =
                         body2.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
                             .attr("src").toString()
                     val imglink = tmp2
-
+                    body2 = body
                     //location
                     tmp =
                         body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
                     val location = arrayListOf<String>()
                     location.add(tmp.text())
                     //price
+                    body2 = body
                     tmp =
                         body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
                     var price = tmp.text()
@@ -253,52 +291,78 @@ class SearchResultActivity : AppCompatActivity() {
                     if (price.contains(" ")) {
                         price = price.replace(" ", "")
                     }
-                    val _intPrice = price.toInt()
+                    var _intPrice by Delegates.notNull<Int>()
+                    try {
+                        _intPrice = price.toInt()
+                    }catch (e:Exception){
+                        e.printStackTrace()
+                        _intPrice = 0
+                    }
 
                     //getTimeStamp
-                    tmp2 = body2.select("body > article:nth-child(1) > a").attr("href")
+                    tmp2 = body2.select("body > article:nth-child("+i.toString()+") > a").attr("href")
                     body2 = Jsoup.connect("https://www.daangn.com"+tmp2).get()
                     tmp2 = body2.select("#article-category > time").text()
-                    var timestamp = 0
+                    var timestamp = 0L
+                    //Log.d("before",tmp2)
                     if(tmp2.contains("시간")){
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*3600000).toInt()
+                      //  Log.d("시간",tmp2)
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*3600000L)
                     }
                     else if(tmp2.contains("분")){
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*60000).toInt()
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*60000L)
                     }
                     else if(tmp2.contains("초")){
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*1000).toInt()
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*1000L)
                     }
                     else if(tmp2.contains("일")){
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*86400000).toInt()
+
+                        //Log.d("일",tmp2)
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*86400000L)
                     }
-                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp, location, "0","carrot"))
+                    else{
+                        Log.d("??",tmp2)
+                    }
+                    val timestamp2 = (timestamp/1000L).toInt()
+                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp2, location, "0","carrot"))
                 }
             }
-            post(carrotItems, thunderItems, joongoItems, find, size)
+            binding.progressBar.visibility = View.INVISIBLE
+            post(carrotItems, thunderItems, joongoItems, find)
 
-            Log.d("sizeC",carrotItems.size.toString())
-            Log.d("sizeT",thunderItems.size.toString())
-            Log.d("sizeJ",joongoItems.size.toString())
             carrotItems.addAll(thunderItems)
             carrotItems.addAll(joongoItems)
 
-            val comp : Comparator<itemData> = compareBy{
+            carrotItems.sortByDescending{
                 it.timeStamp
             }
-            val finalList = carrotItems.sortedWith(comp)
+
             runOnUiThread {
                 resAdapter = SearchResultAdapter(carrotItems)
                 resAdapter.itemClickListener = object:SearchResultAdapter.OnItemClickListener{
+                    @SuppressLint("SimpleDateFormat")
                     override fun OnItemClick(item: itemData) {
                         val fragment = supportFragmentManager.beginTransaction()
+                        val itemInfoFragment = itemInfoFragment()
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.button.visibility = View.INVISIBLE
-                        fragment.replace(R.id.frameLayout, itemInfoFragment()).addToBackStack(null)
+                        var bundle = Bundle()
+                        bundle.putString("title",item.name)
+                        bundle.putInt("price",item.price)
+                        Log.d("loc",item.region.toString())
+                        if(item.region.size != 0 ) {
+                            bundle.putString("addr", item.region.get(0))
+                        }
+                        bundle.putString("imglink",item.imgLink)
+                        val format = SimpleDateFormat("yyyy.MM.dd")
+
+                        bundle.putString("timestamp",format.format(item.timeStamp))
+                        itemInfoFragment.arguments = bundle
+                        fragment.replace(R.id.frameLayout, itemInfoFragment).addToBackStack(null)
                         fragment.commit()
                     }
                 }
@@ -308,22 +372,45 @@ class SearchResultActivity : AppCompatActivity() {
         }
     }
 
-    private fun post(carrotItems: ArrayList<itemData>, thunderItems: ArrayList<itemData>, joongoItems: ArrayList<itemData>, keyword:String, size:Int) {
+    private fun post(carrotItems: ArrayList<itemData>, thunderItems: ArrayList<itemData>, joongoItems: ArrayList<itemData>, keyword:String) {
         val client = OkHttpClient()
-        var reqBodyBuilder = FormBody.Builder()
-            .add("keyword",keyword)
+        var bodyBuilder = FormBody.Builder()
+        val testArr = arrayListOf<Int>()
+        //bodyBuilder.add("keyword",keyword)
 
         for(i:Int in 0 until carrotItems.size){
-            reqBodyBuilder.add("carrot["+i.toString()+"]",carrotItems.get(i).price.toString())
+            bodyBuilder.add("carrot", carrotItems.get(i).price.toString())
+            //testArr.add(carrotItems.get(i).price)
         }
+
+        //bodyBuilder.add("carrot",testArr.toString())
+        testArr.clear()
+
         for(i:Int in 0 until thunderItems.size){
-            reqBodyBuilder.add("thunder["+i.toString()+"]",thunderItems.get(i).price.toString())
+            bodyBuilder.add("thunder", thunderItems.get(i).price.toString())
+            //testArr.add(thunderItems.get(i).price)
         }
+        //bodyBuilder.add("thunder",testArr.toString())
+        testArr.clear()
+
         for(i:Int in 0 until joongoItems.size){
-            reqBodyBuilder.add("joongo["+i.toString()+"]",joongoItems.get(i).price.toString())
+            bodyBuilder.add("joongna", joongoItems.get(i).price.toString())
+            //testArr.add(joongoItems.get(i).price)
         }
-        var reqBody = reqBodyBuilder.build()
-        val req = Request.Builder().url(server_url+"/statistics/"+keyword+"?size="+size).post(reqBody).build()
+        //bodyBuilder.add("joongna",testArr.toString())
+
+        var reqBody = bodyBuilder.build()
+        val req = Request.Builder().url(server_url+"/statistics/"+keyword).post(reqBody).build()
+        client.newCall(req).enqueue(object:Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.d("POST RES", response.toString())
+            }
+
+        })
     }
 
     fun get(keyword:String, size:Int): ResponseBody {
