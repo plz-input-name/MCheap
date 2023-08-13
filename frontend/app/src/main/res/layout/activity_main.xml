@@ -29,13 +29,33 @@
         android:iconifiedByDefault="false"
         android:queryHint="검색어를 입력해주세요"
         app:layout_constraintTop_toBottomOf="@+id/textView"
-        tools:layout_editor_absoluteX="40dp" />
+        tools:layout_editor_absoluteX="40dp">
+
+    </SearchView>
+
+    <TextView
+        android:id="@+id/textView4"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="15dp"
+        android:layout_weight="0"
+
+        android:text="최근 사람들이 찾아본 검색어"
+        android:textColor="#070707"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/searchView" />
 
     <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/KeywordView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginTop="10dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         android:padding="10dp"
-        app:layout_constraintTop_toBottomOf="@+id/searchView" />
+        app:layout_constraintTop_toBottomOf="@+id/textView4"
+        />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
