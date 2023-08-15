@@ -48,13 +48,7 @@ backend:
 
 - https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/EC2_GetStarted.html?icmpid=docs_ec2_console
 
-frontend:
-
-- https://bumptech.github.io/glide/
-
-- https://developer.android.com/reference
-
-- https://stackoverflow.com/questions/56893945/how-to-use-okhttp-to-make-a-post-request-in-kotlin
+- https://www.npmjs.com/package/forever
 
 ## Contributors
 
