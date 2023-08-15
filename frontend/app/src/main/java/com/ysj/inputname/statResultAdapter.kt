@@ -47,22 +47,41 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             val prev = data[position + 1]
 
             var tmp: Int = (prev.thunderPrice - data[position].thunderPrice)
-            if (tmp > 0) bind.thunderMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.thunderMod.setTextColor(Color.RED)
-
-            bind.thunderMod.text = tmp.toString()
-
+            if (tmp > 0) {
+                bind.thunderMod.setTextColor(Color.RED)
+                bind.thunderMod.text = "+"+tmp.toString()
+            }
+            else if (tmp < 0){
+                bind.thunderMod.setTextColor(Color.BLUE)
+                bind.thunderMod.text = tmp.toString()
+            }
+            else{
+                bind.thunderMod.text = "-"
+            }
             tmp = (data[position].carrotPrice - prev.carrotPrice)
-            if (tmp > 0) bind.carrotMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.carrotMod.setTextColor(Color.RED)
-
-            bind.carrotMod.text = tmp.toString()
-
+            if (tmp > 0) {
+                bind.carrotMod.setTextColor(Color.RED)
+                bind.carrotMod.text = "+"+tmp.toString()
+            }
+            else if (tmp < 0){
+                bind.carrotMod.setTextColor(Color.BLUE)
+                bind.carrotMod.text = tmp.toString()
+            }
+            else{
+                bind.carrotMod.text = "-"
+            }
             tmp = (prev.joongoPrice - data[position].joongoPrice)
-            if (tmp > 0) bind.joongoMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.joongoMod.setTextColor(Color.RED)
-
-            bind.joongoMod.text = tmp.toString()
+            if (tmp > 0) {
+                bind.joongoMod.setTextColor(Color.RED)
+                bind.joongoMod.text = "+"+tmp.toString()
+            }
+            else if (tmp < 0){
+                bind.joongoMod.setTextColor(Color.BLUE)
+                bind.joongoMod.text = tmp.toString()
+            }
+            else{
+                bind.joongoMod.text = "-"
+            }
         }
         bind.textView8.text = data[position].date
     }

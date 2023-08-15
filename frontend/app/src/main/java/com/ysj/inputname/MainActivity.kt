@@ -23,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
@@ -52,19 +53,26 @@ class MainActivity : AppCompatActivity() {
     }
     fun getKeyword(){
         val keywordArr = arrayListOf<String>()
-        val arr = JSONArray(Jsoup.connect(server_url+"/keywords?size=10").ignoreContentType(true).get().body().text())
-        for(i:Int in 0 until arr.length()){
-            val jObject = arr.getJSONObject(i)
-            keywordArr.add(jObject.getString("keyword"))
-        }
-        val keywordAdapter = keywordAdapter(keywordArr)
-        runOnUiThread {
-            keywordAdapter.itemClickListener = object : keywordAdapter.OnItemClickListener {
-                override fun OnItemClick(text: String) {
-                    binding.searchView.setQuery(text, true)
-                }
+        try {
+            val arr = JSONArray(
+                Jsoup.connect(server_url + "/keywords?size=10").ignoreContentType(true).get().body()
+                    .text()
+            )
+            for (i: Int in 0 until arr.length()) {
+                val jObject = arr.getJSONObject(i)
+                keywordArr.add(jObject.getString("keyword"))
             }
-            binding.KeywordView.adapter = keywordAdapter
+            val keywordAdapter = keywordAdapter(keywordArr)
+            runOnUiThread {
+                keywordAdapter.itemClickListener = object : keywordAdapter.OnItemClickListener {
+                    override fun OnItemClick(text: String) {
+                        binding.searchView.setQuery(text, true)
+                    }
+                }
+                binding.KeywordView.adapter = keywordAdapter
+            }
+        }catch(e:java.lang.Exception){
+            e.printStackTrace()
         }
     }
 }

@@ -46,7 +46,8 @@ class SearchResultActivity : AppCompatActivity() {
     var size = 10
     var viewList = ArrayList<View>()
     var isStatFragOn = false
-
+    var _selectedSort = 0
+    var carrotItems = arrayListOf<itemData>()
     lateinit var body: Document
     lateinit var resData:String
 
@@ -106,6 +107,37 @@ class SearchResultActivity : AppCompatActivity() {
             }
         }
 
+        binding.button.setOnClickListener {
+            //0 : 최신순 1 : 가격 내림차순 2 : 가격 오름차순
+            _selectedSort = (_selectedSort + 1)%3
+            when(_selectedSort){
+                0->{
+                    binding.button.text = "최신순"
+                    carrotItems.sortByDescending {
+                        it.timeStamp
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+                1->{
+                    binding.button.text = "가격 내림차순"
+                    carrotItems.sortByDescending {
+                        it.price
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+                2->{
+                    binding.button.text = "가격 오름차순"
+                    carrotItems.sortBy{
+                        it.price
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+
         binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
             override fun onSwipeLeft() {
                 val fragment = supportFragmentManager.beginTransaction()
@@ -155,6 +187,7 @@ class SearchResultActivity : AppCompatActivity() {
         val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.searchresview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.searchresview.addItemDecoration(decoration)
+        carrotItems.clear()
 
         CoroutineScope(Dispatchers.IO).launch {
             CoroutineScope(Dispatchers.IO).async {
@@ -170,11 +203,16 @@ class SearchResultActivity : AppCompatActivity() {
                 tmploc.indexOf("/_ssgManifest.js\" defer></script>")
             )
 
+            var t1 = System.currentTimeMillis()
+
             CoroutineScope(Dispatchers.IO).async {
                 body =
-                    Jsoup.connect("https://api.bunjang.co.kr/api/1/find_v2.json?q=" + find + "&order=score&page=0&request_id=2023802153409&stat_device=w&n=200&stat_category_required=1&req_ref=search&version=4")
+                    Jsoup.connect("https://api.bunjang.co.kr/api/1/find_v2.json?q=" + find + "&order=score&page=0&request_id=2023802153409&stat_device=w&n=80&stat_category_required=1&req_ref=search&version=4")
                         .ignoreContentType(true).get()
             }.await()
+            var t2 = System.currentTimeMillis()
+            Log.d("bunjang",(t2 - t1).toString())
+
 
             var jsonBody = JSONObject(body.text())
 
@@ -185,7 +223,7 @@ class SearchResultActivity : AppCompatActivity() {
             if (size > items.length()) {
                 size = items.length()
             }
-            for (i: Int in 0 until size) {
+            for (i: Int in 0 until items.length()) {
                 val j = items.getJSONObject(i)
                 val name = j.getString("name")
                 val price = j.getInt("price")
@@ -200,12 +238,16 @@ class SearchResultActivity : AppCompatActivity() {
             }
 
             var joongoItems: ArrayList<itemData> = arrayListOf()
-
+            t1 = System.currentTimeMillis()
             CoroutineScope(Dispatchers.IO).async {
                 body =
-                    Jsoup.connect("https://web.joongna.com/_next/data/" + data + "/search/" + find + ".json?keyword=" + find)
+                    Jsoup.connect("https://web.joongna.com/_next/data/" + data + "/search/" + find + ".json?keyword=" + find + "&page=1")
                         .ignoreContentType(true).get()
             }.await()
+            t2 = System.currentTimeMillis()
+            Log.d("joongna",(t2 - t1).toString())
+
+
 
             jsonBody = JSONObject(body.text())
             items = jsonBody.getJSONObject("pageProps")
@@ -241,14 +283,44 @@ class SearchResultActivity : AppCompatActivity() {
                 }
             }
 
-            var carrotItems = arrayListOf<itemData>()
-            for (j: Int in 1 until size / 10 + 1) {
+            t1 = System.currentTimeMillis()
+
+            for (j: Int in 1 until 5) {
+
                 body =
                     Jsoup.connect("https://www.daangn.com/search/" + find + "/more/flea_market?page=" + j.toString())
                         .ignoreContentType(true).get()
                 var i = 0
                 lateinit var body2:Document
-                while (true){
+                var temp = body.select("span.article-title")
+                val name = arrayListOf<String>()
+                name.addAll(temp.eachText())
+                Log.d("test",name.toString())
+                for(j:Int in 0 until temp.size){
+                    //Log.d("test",temp.get(j).text())
+                }
+
+                temp = body.select("div.card-photo > img")
+                for(j:Int in 0 until temp.size){
+                  //  Log.d("test",temp.get(j).attr("src"))
+                }
+
+                temp = body.select("p.article-region-name")
+                for(j:Int in 0 until temp.size){
+                   // Log.d("test",temp.get(j).text())
+                }
+
+                temp = body.select("p.article-price")
+                for(j:Int in 0 until temp.size){
+                    //Log.d("test",temp.get(j).text())
+                }
+
+                temp = body.select("p.article-region-name")
+                for(j:Int in 0 until temp.size){
+                    //Log.d("test",temp.get(j).text())
+                }
+
+                /*while (true){
                     body2 = body
                     i++
                     //title
@@ -329,8 +401,10 @@ class SearchResultActivity : AppCompatActivity() {
                     }
                     val timestamp2 = (timestamp/1000L).toInt()
                     carrotItems.add(itemData(title, _intPrice, imglink, timestamp2, location, "0","carrot"))
-                }
+                }*/
             }
+            t2 = System.currentTimeMillis()
+            Log.d("carrot",(t2-t1).toString())
             binding.progressBar.visibility = View.INVISIBLE
             post(carrotItems, thunderItems, joongoItems, find)
 
