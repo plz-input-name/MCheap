@@ -50,6 +50,13 @@ backend:
 
 - https://www.npmjs.com/package/forever
 
+frontend:
+
+- https://bumptech.github.io/glide/
+
+- https://developer.android.com/reference
+
+- https://stackoverflow.com/questions/56893945/how-to-use-okhttp-to-make-a-post-request-in-kotlin
 
 ## Contributors
 
