@@ -54,3 +54,4 @@ backend:
 | ------ | --------- | ------------------------- | ------------------------------ | ------- |
 | 우이산 | E-San Woo | startoflateness@gmail.com | https://github.com/goldentrash | backend |
 | 양석준 | SUKJOOON YANG | ysj7191@naver.com | https://github.com/yangjjune | frontend |
+| 성정현 | JEONGHYEON SUNG | roy0625@naver.com | https://github.com/Roysung0625 | backend |
