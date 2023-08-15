@@ -29,15 +29,24 @@
             android:layout_marginTop="10dp"
             android:text="이름"
             android:textColor="#171717"
+<<<<<<< HEAD
             android:textSize="24sp" />
+=======
+            android:textSize="20sp" />
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
 
         <TextView
             android:id="@+id/priceView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="가격"
+<<<<<<< HEAD
             android:textColor="#232323"
             android:textSize="20sp" />
+=======
+            android:textColor="#6A6A6A"
+            android:textSize="16sp" />
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
 
         <TextView
             android:id="@+id/addrView"

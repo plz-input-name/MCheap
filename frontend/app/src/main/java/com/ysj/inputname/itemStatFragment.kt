@@ -73,7 +73,11 @@ class itemStatFragment: Fragment() {
                         val carrot = jobject.getInt("carrot")
                         val thunder = jobject.getInt("thunder")
                         val joongna = jobject.getInt("joongna")
+<<<<<<< HEAD
                         val date = jobject.getString("collected_at")
+=======
+                        val date = jobject.getString("collected_at").substring(0,10)
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
                         if(str!=null)
                             nodeArr.add(nodeData(str, carrot, thunder,joongna,date))
                         else{
@@ -86,7 +90,11 @@ class itemStatFragment: Fragment() {
 
             }.await()
             nodeArr.sortByDescending {
+<<<<<<< HEAD
                 LocalDate.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
+=======
+                LocalDate.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
             }
             activity.runOnUiThread {
 

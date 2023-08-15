@@ -64,7 +64,11 @@
         android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"
+<<<<<<< HEAD
         android:layout_marginEnd="115dp"
+=======
+        android:layout_marginEnd="95dp"
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
         android:iconifiedByDefault="false"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry">

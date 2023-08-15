@@ -53,6 +53,7 @@ class MainActivity : AppCompatActivity() {
     }
     fun getKeyword(){
         val keywordArr = arrayListOf<String>()
+<<<<<<< HEAD
         try {
             val arr = JSONArray(
                 Jsoup.connect(server_url + "/keywords?size=10").ignoreContentType(true).get().body()
@@ -73,6 +74,21 @@ class MainActivity : AppCompatActivity() {
             }
         }catch(e:java.lang.Exception){
             e.printStackTrace()
+=======
+        val arr = JSONArray(Jsoup.connect(server_url+"/keywords?size=10").ignoreContentType(true).get().body().text())
+        for(i:Int in 0 until arr.length()){
+            val jObject = arr.getJSONObject(i)
+            keywordArr.add(jObject.getString("keyword"))
+        }
+        val keywordAdapter = keywordAdapter(keywordArr)
+        runOnUiThread {
+            keywordAdapter.itemClickListener = object : keywordAdapter.OnItemClickListener {
+                override fun OnItemClick(text: String) {
+                    binding.searchView.setQuery(text, true)
+                }
+            }
+            binding.KeywordView.adapter = keywordAdapter
+>>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
         }
     }
 }
