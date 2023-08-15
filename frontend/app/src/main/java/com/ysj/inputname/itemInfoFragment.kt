@@ -1,5 +1,7 @@
 package com.ysj.inputname
 
+import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -25,18 +27,26 @@ class itemInfoFragment : Fragment(){
         val title = bundle?.getString("title")
         val price = bundle?.getInt("price", 0)
         val addr = bundle?.getString("addr", "미표기")
+        val link = bundle?.getString("url")
 
-        val makedPrice = DecimalFormat("#,###").format(price)
+        val makedPrice = "₩"+DecimalFormat("#,###").format(price)
         SRactivity.runOnUiThread {
             binding.addrView.text = addr
             binding.nameView.text = title
-            binding.priceView.text = price.toString()
+            binding.priceView.text = makedPrice
 
             Glide.with(this@itemInfoFragment).load(imgLink).into(binding.imageView3)
         }
+        binding.button3.setOnClickListener {
+            val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
+            startActivity(intent)
+        }
         binding.button2.setOnClickListener {
-            if(activity!=null)
-                requireActivity().supportFragmentManager.beginTransaction().remove(this@itemInfoFragment).commit()
+            if(activity!=null) {
+                (activity as SearchResultActivity).binding.button.visibility = View.VISIBLE
+                requireActivity().supportFragmentManager.beginTransaction()
+                    .remove(this@itemInfoFragment).commit()
+            }
         }
         return binding.root
     }

@@ -44,14 +44,16 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="70dp"
+        android:layout_width="95dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginStart="5dp"
         android:layout_marginTop="40dp"
         android:backgroundTint="#393939"
-        android:text="필터"
+        android:text="기본 순"
         android:textAlignment="center"
+        android:textSize="11sp"
+        android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/searchView2"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlCompat" />
@@ -62,7 +64,7 @@
         android:layout_height="40dp"
         android:layout_marginStart="20dp"
         android:layout_marginTop="40dp"
-        android:layout_marginEnd="95dp"
+        android:layout_marginEnd="115dp"
         android:iconifiedByDefault="false"
         app:layout_constraintTop_toTopOf="parent"
         tools:ignore="RtlSymmetry">

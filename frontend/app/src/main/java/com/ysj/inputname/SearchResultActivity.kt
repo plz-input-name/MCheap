@@ -48,13 +48,16 @@ class SearchResultActivity : AppCompatActivity() {
     var isStatFragOn = false
     var _selectedSort = 0
     var carrotItems = arrayListOf<itemData>()
+    var adaptItems = arrayListOf<itemData>()
     lateinit var body: Document
     lateinit var resData:String
 
     override fun onResume() {
         binding.progressBar.visibility = View.VISIBLE
+        binding.button.visibility = View.VISIBLE
         super.onResume()
     }
+
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -108,12 +111,12 @@ class SearchResultActivity : AppCompatActivity() {
         }
 
         binding.button.setOnClickListener {
-            //0 : 최신순 1 : 가격 내림차순 2 : 가격 오름차순
+            //0 : 기본순 1 : 가격 내림차순 2 : 가격 오름차순
             _selectedSort = (_selectedSort + 1)%3
             when(_selectedSort){
                 0->{
-                    binding.button.text = "최신순"
-                    carrotItems.sortByDescending {
+                    binding.button.text = "기본 순서"
+                    carrotItems.sortBy {
                         it.timeStamp
                     }
                     if(resAdapter != null)
@@ -228,13 +231,13 @@ class SearchResultActivity : AppCompatActivity() {
                 val name = j.getString("name")
                 val price = j.getInt("price")
                 val imgLink = j.getString("product_image")
-                val time = j.getInt("update_time")
+                val fav = j.getInt("num_faved")
                 val _region = j.getString("location")
                 var region: ArrayList<String> = arrayListOf()
                 region.add(_region)
 
                 val id = j.getString("pid")
-                thunderItems.add(itemData(name, price, imgLink, time, region, id,"thunder"))
+                thunderItems.add(itemData(name, price, imgLink, fav, region, id,"thunder"))
             }
 
             var joongoItems: ArrayList<itemData> = arrayListOf()
@@ -267,9 +270,7 @@ class SearchResultActivity : AppCompatActivity() {
                 val name = j.getString("title")
                 val price = j.getInt("price")
                 val imgLink = j.getString("url")
-                val _time = j.getString("sortDate")//2023-08-03 16:06:34
-                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
-                val time = sdf.parse(_time)?.time?.div(1000)
+                val fav = j.getInt("wishCount")
                 val _region = j.getJSONArray("locationNames")
                 val id = j.getString("seq")
 
@@ -277,77 +278,43 @@ class SearchResultActivity : AppCompatActivity() {
                 for (i: Int in 0 until _region.length()) {
                     region.add(_region.getString(i))
                 }
-
-                if (time != null) {
-                    joongoItems.add(itemData(name, price, imgLink, time.toInt(), region, id,"joongo"))
-                }
+                joongoItems.add(itemData(name, price, imgLink, fav, region, id,"joongo"))
             }
 
-            t1 = System.currentTimeMillis()
-
-            for (j: Int in 1 until 5) {
-
+            for (j: Int in 1 until 4) {
+                t1 = System.currentTimeMillis()
                 body =
                     Jsoup.connect("https://www.daangn.com/search/" + find + "/more/flea_market?page=" + j.toString())
                         .ignoreContentType(true).get()
-                var i = 0
-                lateinit var body2:Document
                 var temp = body.select("span.article-title")
                 val name = arrayListOf<String>()
+                val img = arrayListOf<String>()
+                val region = arrayListOf<String>()
+                val price2 = arrayListOf<Int>()
+                val time = arrayListOf<Int>()
+                val id = arrayListOf<String>()
+
                 name.addAll(temp.eachText())
-                Log.d("test",name.toString())
-                for(j:Int in 0 until temp.size){
-                    //Log.d("test",temp.get(j).text())
-                }
 
                 temp = body.select("div.card-photo > img")
-                for(j:Int in 0 until temp.size){
-                  //  Log.d("test",temp.get(j).attr("src"))
+                for(k:Int in 0 until temp.size){
+                    img.add(temp.attr("src"))
                 }
 
-                temp = body.select("p.article-region-name")
-                for(j:Int in 0 until temp.size){
-                   // Log.d("test",temp.get(j).text())
+                //Log.d("img", img.toString())
+                temp = body.select("body > article > a")
+                for(k:Int in 0 until temp.size){
+                    id.add(temp.attr("href"))
                 }
+                //Log.d("id",id.toString())
+
+                temp = body.select("p.article-region-name")
+                region.addAll(temp.eachText())
 
                 temp = body.select("p.article-price")
-                for(j:Int in 0 until temp.size){
-                    //Log.d("test",temp.get(j).text())
-                }
-
-                temp = body.select("p.article-region-name")
-                for(j:Int in 0 until temp.size){
-                    //Log.d("test",temp.get(j).text())
-                }
-
-                /*while (true){
-                    body2 = body
-                    i++
-                    //title
-                    var tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > div > span.article-title")
-
-                    if (tmp.isEmpty()) {
-                        break
-                    }
-                    body2 = body
-                    val title = tmp.text()
-                    //imglink
-                    var tmp2 =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
-                            .attr("src").toString()
-                    val imglink = tmp2
-                    body2 = body
-                    //location
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
-                    val location = arrayListOf<String>()
-                    location.add(tmp.text())
-                    //price
-                    body2 = body
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
-                    var price = tmp.text()
+               // Log.d("price",temp.toString())
+                for(k:Int in 0 until temp.size) {
+                    var price = temp.get(k).text()
                     if (price.contains(",")) {
                         price = price.replace(",", "")
                     }
@@ -366,45 +333,59 @@ class SearchResultActivity : AppCompatActivity() {
                     var _intPrice by Delegates.notNull<Int>()
                     try {
                         _intPrice = price.toInt()
-                    }catch (e:Exception){
-                        e.printStackTrace()
+                    } catch (e: Exception) {
+                        //e.printStackTrace()
                         _intPrice = 0
                     }
+                    price2.add(_intPrice)
+                }
 
+                /*for(k:Int in 0 until temp.size) {
                     //getTimeStamp
-                    tmp2 = body2.select("body > article:nth-child("+i.toString()+") > a").attr("href")
-                    body2 = Jsoup.connect("https://www.daangn.com"+tmp2).get()
-                    tmp2 = body2.select("#article-category > time").text()
+                    var tmp2 = body.select("body > article:nth-child(" + k.toString() + ") > a")
+                        .attr("href")
+                    body = Jsoup.connect("https://www.daangn.com" + tmp2).get()
+                    tmp2 = body.select("#article-category > time").text()
                     var timestamp = 0L
                     //Log.d("before",tmp2)
-                    if(tmp2.contains("시간")){
+                    if (tmp2.contains("시간")) {
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                      //  Log.d("시간",tmp2)
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*3600000L)
-                    }
-                    else if(tmp2.contains("분")){
+                        //  Log.d("시간",tmp2)
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong() * 3600000L)
+                    } else if (tmp2.contains("분")) {
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*60000L)
-                    }
-                    else if(tmp2.contains("초")){
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong() * 60000L)
+                    } else if (tmp2.contains("초")) {
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*1000L)
-                    }
-                    else if(tmp2.contains("일")){
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong() * 1000L)
+                    } else if (tmp2.contains("일")) {
                         tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
 
                         //Log.d("일",tmp2)
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*86400000L)
+                        timestamp = (System.currentTimeMillis() - tmp2.toLong() * 86400000L)
+                    } else {
+                        Log.d("??", tmp2)
                     }
-                    else{
-                        Log.d("??",tmp2)
-                    }
-                    val timestamp2 = (timestamp/1000L).toInt()
-                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp2, location, "0","carrot"))
+                    val timestamp2 = (timestamp / 1000L).toInt()
+                    time.add(timestamp2)
                 }*/
+
+                for(z:Int in 0 until price2.size){
+                    carrotItems.add(
+                        itemData(name.get(z),
+                            price2.get(z),
+                            img.get(z),
+                            0,
+                            arrayListOf(region.get(z)),
+                            id.get(z),
+                            "carrot"
+                        )
+                    )
+                }
+                t2 = System.currentTimeMillis()
+                Log.d("daangn",(t2-t1).toString())
             }
-            t2 = System.currentTimeMillis()
-            Log.d("carrot",(t2-t1).toString())
+
             binding.progressBar.visibility = View.INVISIBLE
             post(carrotItems, thunderItems, joongoItems, find)
 
@@ -427,7 +408,12 @@ class SearchResultActivity : AppCompatActivity() {
                         var bundle = Bundle()
                         bundle.putString("title",item.name)
                         bundle.putInt("price",item.price)
-                        Log.d("loc",item.region.toString())
+                        when(item.origin){
+                            "carrot"->bundle.putString("url","https://daangn.com"+item.id)
+                            "thunder"->bundle.putString("url","https://m.bunjang.co.kr/products/"+item.id)
+                            "joongo"->bundle.putString("url","https://web.joongna.com/product/"+item.id)
+                        }
+
                         if(item.region.size != 0 ) {
                             bundle.putString("addr", item.region.get(0))
                         }
@@ -503,14 +489,14 @@ class SearchResultActivity : AppCompatActivity() {
                     override fun onResponse(call: Call, response: Response) {
                         response.use {
                             if (!response.isSuccessful) throw IOException("Unexpected code")
-                            Log.d("test", response.body!!.string())
+                            //Log.d("test", response.body!!.string())
                             body = response.body!!
                         }
                     }
                 })
             }.await()
         }
-        Log.d("test", body.string())
+        //Log.d("test", body.string())
         return body
     }
 }
