@@ -47,7 +47,6 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             val prev = data[position + 1]
 
             var tmp: Int = (prev.thunderPrice - data[position].thunderPrice)
-<<<<<<< HEAD
             if (tmp > 0) {
                 bind.thunderMod.setTextColor(Color.RED)
                 bind.thunderMod.text = "+"+tmp.toString()
@@ -83,24 +82,6 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             else{
                 bind.joongoMod.text = "-"
             }
-=======
-            if (tmp > 0) bind.thunderMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.thunderMod.setTextColor(Color.RED)
-
-            bind.thunderMod.text = tmp.toString()
-
-            tmp = (data[position].carrotPrice - prev.carrotPrice)
-            if (tmp > 0) bind.carrotMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.carrotMod.setTextColor(Color.RED)
-
-            bind.carrotMod.text = tmp.toString()
-
-            tmp = (prev.joongoPrice - data[position].joongoPrice)
-            if (tmp > 0) bind.joongoMod.setTextColor(Color.BLUE)
-            else if (tmp < 0) bind.joongoMod.setTextColor(Color.RED)
-
-            bind.joongoMod.text = tmp.toString()
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
         }
         bind.textView8.text = data[position].date
     }

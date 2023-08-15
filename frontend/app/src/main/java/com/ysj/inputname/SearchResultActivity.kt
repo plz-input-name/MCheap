@@ -46,27 +46,18 @@ class SearchResultActivity : AppCompatActivity() {
     var size = 10
     var viewList = ArrayList<View>()
     var isStatFragOn = false
-<<<<<<< HEAD
     var _selectedSort = 0
     var carrotItems = arrayListOf<itemData>()
     var adaptItems = arrayListOf<itemData>()
-=======
 
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
     lateinit var body: Document
     lateinit var resData:String
 
     override fun onResume() {
         binding.progressBar.visibility = View.VISIBLE
-<<<<<<< HEAD
         binding.button.visibility = View.VISIBLE
         super.onResume()
     }
-
-=======
-        super.onResume()
-    }
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -119,7 +110,6 @@ class SearchResultActivity : AppCompatActivity() {
             }
         }
 
-<<<<<<< HEAD
         binding.button.setOnClickListener {
             //0 : 기본순 1 : 가격 내림차순 2 : 가격 오름차순
             _selectedSort = (_selectedSort + 1)%3
@@ -150,9 +140,6 @@ class SearchResultActivity : AppCompatActivity() {
                 }
             }
         }
-
-=======
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
         binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
             override fun onSwipeLeft() {
                 val fragment = supportFragmentManager.beginTransaction()
@@ -306,7 +293,6 @@ class SearchResultActivity : AppCompatActivity() {
                 val time = arrayListOf<Int>()
                 val id = arrayListOf<String>()
 
-<<<<<<< HEAD
                 name.addAll(temp.eachText())
 
                 temp = body.select("div.card-photo > img")
@@ -328,29 +314,6 @@ class SearchResultActivity : AppCompatActivity() {
                // Log.d("price",temp.toString())
                 for(k:Int in 0 until temp.size) {
                     var price = temp.get(k).text()
-=======
-                    if (tmp.isEmpty()) {
-                        break
-                    }
-                    body2 = body
-                    val title = tmp.text()
-                    //imglink
-                    var tmp2 =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
-                            .attr("src").toString()
-                    val imglink = tmp2
-                    body2 = body
-                    //location
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
-                    val location = arrayListOf<String>()
-                    location.add(tmp.text())
-                    //price
-                    body2 = body
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
-                    var price = tmp.text()
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
                     if (price.contains(",")) {
                         price = price.replace(",", "")
                     }
@@ -369,7 +332,6 @@ class SearchResultActivity : AppCompatActivity() {
                     var _intPrice by Delegates.notNull<Int>()
                     try {
                         _intPrice = price.toInt()
-<<<<<<< HEAD
                     } catch (e: Exception) {
                         //e.printStackTrace()
                         _intPrice = 0
@@ -425,49 +387,6 @@ class SearchResultActivity : AppCompatActivity() {
 
             binding.progressBar.visibility = View.INVISIBLE
             post(carrotItems, thunderItems, joongoItems, find)
-
-=======
-                    }catch (e:Exception){
-                        e.printStackTrace()
-                        _intPrice = 0
-                    }
-
-                    //getTimeStamp
-                    tmp2 = body2.select("body > article:nth-child("+i.toString()+") > a").attr("href")
-                    body2 = Jsoup.connect("https://www.daangn.com"+tmp2).get()
-                    tmp2 = body2.select("#article-category > time").text()
-                    var timestamp = 0L
-                    //Log.d("before",tmp2)
-                    if(tmp2.contains("시간")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                      //  Log.d("시간",tmp2)
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*3600000L)
-                    }
-                    else if(tmp2.contains("분")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*60000L)
-                    }
-                    else if(tmp2.contains("초")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*1000L)
-                    }
-                    else if(tmp2.contains("일")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-
-                        //Log.d("일",tmp2)
-                        timestamp = (System.currentTimeMillis() - tmp2.toLong()*86400000L)
-                    }
-                    else{
-                        Log.d("??",tmp2)
-                    }
-                    val timestamp2 = (timestamp/1000L).toInt()
-                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp2, location, "0","carrot"))
-                }
-            }
-            binding.progressBar.visibility = View.INVISIBLE
-            post(carrotItems, thunderItems, joongoItems, find)
-
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
             carrotItems.addAll(thunderItems)
             carrotItems.addAll(joongoItems)
 
@@ -487,16 +406,13 @@ class SearchResultActivity : AppCompatActivity() {
                         var bundle = Bundle()
                         bundle.putString("title",item.name)
                         bundle.putInt("price",item.price)
-<<<<<<< HEAD
+
                         when(item.origin){
                             "carrot"->bundle.putString("url","https://daangn.com"+item.id)
                             "thunder"->bundle.putString("url","https://m.bunjang.co.kr/products/"+item.id)
                             "joongo"->bundle.putString("url","https://web.joongna.com/product/"+item.id)
                         }
 
-=======
-                        Log.d("loc",item.region.toString())
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
                         if(item.region.size != 0 ) {
                             bundle.putString("addr", item.region.get(0))
                         }

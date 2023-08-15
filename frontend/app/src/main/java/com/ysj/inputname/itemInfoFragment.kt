@@ -27,7 +27,6 @@ class itemInfoFragment : Fragment(){
         val title = bundle?.getString("title")
         val price = bundle?.getInt("price", 0)
         val addr = bundle?.getString("addr", "미표기")
-<<<<<<< HEAD
         val link = bundle?.getString("url")
 
         val makedPrice = "₩"+DecimalFormat("#,###").format(price)
@@ -42,17 +41,6 @@ class itemInfoFragment : Fragment(){
             val intent = Intent(Intent.ACTION_VIEW, Uri.parse(link))
             startActivity(intent)
         }
-=======
-
-        val makedPrice = DecimalFormat("#,###").format(price)
-        SRactivity.runOnUiThread {
-            binding.addrView.text = addr
-            binding.nameView.text = title
-            binding.priceView.text = price.toString()
-
-            Glide.with(this@itemInfoFragment).load(imgLink).into(binding.imageView3)
-        }
->>>>>>> a718141d23ac95c2c63afe1393348f93ccb454e2
         binding.button2.setOnClickListener {
             if(activity!=null) {
                 (activity as SearchResultActivity).binding.button.visibility = View.VISIBLE
