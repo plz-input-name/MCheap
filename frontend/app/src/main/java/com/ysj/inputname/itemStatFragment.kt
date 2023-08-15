@@ -1,6 +1,7 @@
 package com.ysj.inputname
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -85,6 +86,7 @@ class itemStatFragment: Fragment() {
                 }
 
             }.await()
+
             nodeArr.sortByDescending {
                 LocalDate.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             }

@@ -49,11 +49,13 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             var tmp: Int = (prev.thunderPrice - data[position].thunderPrice)
             if (tmp > 0) {
                 bind.thunderMod.setTextColor(Color.RED)
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
                 bind.thunderMod.text = "+"+tmp.toString()
             }
             else if (tmp < 0){
                 bind.thunderMod.setTextColor(Color.BLUE)
-                bind.thunderMod.text = tmp.toString()
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
+                bind.thunderMod.text = ""+tmp.toString()
             }
             else{
                 bind.thunderMod.text = "-"
@@ -61,10 +63,12 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             tmp = (data[position].carrotPrice - prev.carrotPrice)
             if (tmp > 0) {
                 bind.carrotMod.setTextColor(Color.RED)
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
                 bind.carrotMod.text = "+"+tmp.toString()
             }
             else if (tmp < 0){
                 bind.carrotMod.setTextColor(Color.BLUE)
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
                 bind.carrotMod.text = tmp.toString()
             }
             else{
@@ -73,10 +77,12 @@ class statResultAdapter(val data:ArrayList<nodeData>): RecyclerView.Adapter<stat
             tmp = (prev.joongoPrice - data[position].joongoPrice)
             if (tmp > 0) {
                 bind.joongoMod.setTextColor(Color.RED)
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
                 bind.joongoMod.text = "+"+tmp.toString()
             }
             else if (tmp < 0){
                 bind.joongoMod.setTextColor(Color.BLUE)
+                tmp = DecimalFormat("#,###").format(tmp).toInt()
                 bind.joongoMod.text = tmp.toString()
             }
             else{
