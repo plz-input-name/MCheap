@@ -1,10 +1,13 @@
 package com.ysj.inputname
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.preference.PreferenceManager
 import android.util.Log
 import android.view.MotionEvent
 import android.view.View
@@ -13,6 +16,7 @@ import android.view.animation.Animation.AnimationListener
 import android.view.animation.AnimationUtils
 import android.widget.SearchView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.constraintlayout.widget.ConstraintSet.Motion
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
@@ -56,6 +60,7 @@ class SearchResultActivity : AppCompatActivity() {
     var min = Int.MAX_VALUE
     var max = 0
     var avg = 0
+
 
     lateinit var body: Document
     lateinit var resData:String
@@ -172,10 +177,9 @@ class SearchResultActivity : AppCompatActivity() {
         }
 
         setContentView(binding.root)
-
+        var find:String
         binding.searchView2.setOnQueryTextListener(object:SearchView.OnQueryTextListener{
             override fun onQueryTextSubmit(query: String?): Boolean {
-                lateinit var find:String
                 if(query == null){
                     find = ""
                     return false
@@ -189,6 +193,36 @@ class SearchResultActivity : AppCompatActivity() {
                 return false
             }
         })
+        val pref = this.getSharedPreferences("fav_list", Context.MODE_PRIVATE)
+        binding.favFloatingButton.setOnClickListener {
+            if(pref.getBoolean(str,false)){
+                //바로 액티비티 이동
+                val _intent = Intent(this@SearchResultActivity, FavActivity::class.java)
+                val tempArr = arrayListOf<String>()
+                tempArr.addAll(pref.all.keys)
+                _intent.putStringArrayListExtra("fav",tempArr)
+                startActivity(_intent)
+            }else{
+                //등록하시겠습니까?
+                val builder = AlertDialog.Builder(this)
+                    .setTitle("즐겨찾기 등록")
+                    .setMessage("키워드"+str+"를\n즐겨찾기에 등록하시겠습니까?")
+                    .setPositiveButton("예",
+                        DialogInterface.OnClickListener { dialog, id ->
+                            pref.edit().putBoolean(str,true).apply()
+                            val _intent = Intent(this@SearchResultActivity, FavActivity::class.java)
+                            val tempArr = arrayListOf<String>()
+                            tempArr.addAll(pref.all.keys)
+                            _intent.putStringArrayListExtra("fav",tempArr)
+                            startActivity(_intent)
+                        })
+                    .setNegativeButton("취소",
+                    DialogInterface.OnClickListener{dialog, id->
+                        //none
+                    })
+                builder.show()
+            }
+        }
     }
 
 

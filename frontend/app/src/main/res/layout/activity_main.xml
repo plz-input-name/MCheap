@@ -84,13 +84,15 @@
         android:id="@+id/floatingActionButton2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginEnd="10dp"
-        android:layout_marginBottom="40dp"
+        android:layout_marginEnd="20dp"
+        android:layout_marginBottom="50dp"
+        android:backgroundTint="#f5f5f5"
         android:clickable="true"
         android:src="@drawable/baseline_star_24"
-        app:tint="#FFEB3B"
-        app:backgroundTint="#D8D8D8"
+        app:backgroundTint="#000000"
+        app:borderWidth="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:tint="#FFEB3B" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

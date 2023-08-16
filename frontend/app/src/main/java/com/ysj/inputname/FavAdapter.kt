@@ -30,6 +30,7 @@ class FavAdapter(val data:ArrayList<String>): RecyclerView.Adapter<FavAdapter.Vi
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
+        holder.binding.textView16.text = data[position]
        // holder.binding.textView2.text = "# "+ data[position] + " "
     }
 }
