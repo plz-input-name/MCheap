@@ -38,6 +38,8 @@ class itemStatFragment: Fragment() {
     lateinit var binding: FragmentItemStatBinding
     lateinit var activity:SearchResultActivity
     lateinit var bundle:Bundle
+
+    val server_url = "http://52.78.214.149:3000"
     override fun onResume() {
         super.onResume()
         binding.progressBar2.visibility = View.VISIBLE
@@ -75,7 +77,7 @@ class itemStatFragment: Fragment() {
     fun getData(){
         val activity:SearchResultActivity = activity as SearchResultActivity
         val str = arguments?.getString("search","none")
-        val url = "http://52.78.214.149:3000/statistics/"+str+"?size=10"
+        val url = server_url+"/statistics/"+str+"?size=10"
         val nodeArr = arrayListOf<nodeData>()
         CoroutineScope(Dispatchers.IO).launch {
             CoroutineScope(Dispatchers.IO).async {

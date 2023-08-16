@@ -1,5 +1,6 @@
 package com.ysj.inputname
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -53,6 +54,14 @@ class MainActivity : AppCompatActivity() {
 
         })
 
+        binding.floatingActionButton2.setOnClickListener {
+            val _intent = Intent(this, FavActivity::class.java)
+            val tempArr = arrayListOf<String>()
+            val pref = this.getSharedPreferences("fav_list", Context.MODE_PRIVATE)
+            tempArr.addAll(pref.all.keys)
+            _intent.putStringArrayListExtra("fav",tempArr)
+            startActivity(_intent)
+        }
         CoroutineScope(Dispatchers.IO).launch {
             getKeyword()
         }
