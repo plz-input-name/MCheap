@@ -7,6 +7,21 @@
     android:layout_height="match_parent">
 
 
+    <TextView
+        android:id="@+id/textView11"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:layout_marginTop="15dp"
+        android:text="MCheap"
+        android:textColor="#575757"
+        android:textSize="24sp"
+        android:textStyle="bold"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/floatingActionButton"
         android:layout_width="wrap_content"
@@ -44,30 +59,30 @@
 
     <Button
         android:id="@+id/button"
-        android:layout_width="95dp"
+        android:layout_width="105dp"
         android:layout_height="40dp"
         android:layout_gravity="center"
         android:layout_marginStart="5dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:backgroundTint="#393939"
         android:text="기본 순"
         android:textAlignment="center"
         android:textSize="10sp"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/searchView2"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
         tools:ignore="RtlCompat" />
 
     <SearchView
         android:id="@+id/searchView2"
         android:layout_width="match_parent"
         android:layout_height="40dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginTop="40dp"
+        android:layout_marginTop="10dp"
         android:layout_marginEnd="115dp"
         android:iconifiedByDefault="false"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="RtlSymmetry">
+        app:layout_constraintTop_toBottomOf="@+id/textView11"
+        tools:ignore="RtlSymmetry"
+        tools:layout_editor_absoluteX="20dp">
 
     </SearchView>
 
