@@ -1,6 +1,6 @@
 module.exports = {
   async find(conn, keyword, size) {
-    return await conn.execute(
+    const [statistics] = await conn.execute(
       `
       SELECT
         *
@@ -14,6 +14,8 @@ module.exports = {
       `,
       [keyword, size]
     );
+
+    return statistics;
   },
   async add(conn, keyword, carrot, thunder, joongna) {
     return await conn.execute(
@@ -27,7 +29,7 @@ module.exports = {
     );
   },
   async latestKeywords(conn, size) {
-    return await conn.execute(
+    const [keywords] = await conn.execute(
       `
       SELECT
         keyword,
@@ -43,5 +45,7 @@ module.exports = {
       `,
       [size]
     );
+
+    return keywords;
   },
 };
