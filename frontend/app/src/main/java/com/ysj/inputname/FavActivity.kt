@@ -24,6 +24,13 @@ class FavActivity : AppCompatActivity() {
             }
             val adapter = FavAdapter(favArr)
             binding.favView.adapter = adapter
+            adapter.itemClickListener = object:FavAdapter.OnItemClickListener{
+                override fun OnItemClick(text: String) {
+                    val _intent = Intent(this@FavActivity, SearchResultActivity::class.java)
+                    _intent.putExtra("search",text)
+                    startActivity(_intent)
+                }
+            }
         }
         binding.textView11.setOnClickListener {
             val _intent = Intent(this, MainActivity::class.java)

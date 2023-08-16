@@ -24,9 +24,9 @@ class FavAdapter(val data:ArrayList<String>): RecyclerView.Adapter<FavAdapter.Vi
     }
     inner class ViewHolder(val binding: FavrowBinding):RecyclerView.ViewHolder(binding.root){
         init{
-            //.textView2.setOnClickListener {
-           //     itemClickListener?.OnItemClick(data[adapterPosition])
-           // }
+            binding.textView16.setOnClickListener {
+                itemClickListener?.OnItemClick(data[adapterPosition])
+            }
         }
     }
     var itemClickListener:OnItemClickListener?=null
