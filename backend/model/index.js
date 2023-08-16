@@ -10,4 +10,4 @@ const pool = mysql.createPool({
   dateStrings: true,
 });
 
-module.exports = { pool, search: require("./search") };
+module.exports = { pool, searchModel: require("./search") };
