@@ -25,6 +25,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.async
 import kotlinx.coroutines.launch
 import okhttp3.*
+import org.json.JSONArray
 import org.json.JSONObject
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
@@ -32,6 +33,7 @@ import java.io.IOException
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.collections.ArrayList
+import kotlin.properties.Delegates
 
 class SearchResultActivity : AppCompatActivity() {
     lateinit var binding: ActivitySearchResultBinding
@@ -39,17 +41,32 @@ class SearchResultActivity : AppCompatActivity() {
 
     lateinit var transLeft:Animation
     lateinit var transRight:Animation
-    val server_url = "https://localhost"
+    val server_url = "http://52.78.214.149:3000"
     var data = "dlCzX-w5lhi2KaQ1JQhvG"
     var size = 10
     var viewList = ArrayList<View>()
+    var isStatFragOn = false
+    var _selectedSort = 0
+    var carrotItems = arrayListOf<itemData>()
+    var adaptItems = arrayListOf<itemData>()
+
+    var sum = 0
+    var min = Int.MAX_VALUE
+    var max = 0
+    var avg = 0
 
     lateinit var body: Document
     lateinit var resData:String
 
+    override fun onResume() {
+        binding.progressBar.visibility = View.VISIBLE
+        binding.button.visibility = View.VISIBLE
+        super.onResume()
+    }
     @SuppressLint("ClickableViewAccessibility")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
         transLeft = AnimationUtils.loadAnimation(this,R.anim.translate_left)
         transRight = AnimationUtils.loadAnimation(this,R.anim.translate_right)
         transRight.setAnimationListener(object: AnimationListener{
@@ -59,6 +76,8 @@ class SearchResultActivity : AppCompatActivity() {
 
             override fun onAnimationEnd(animation: Animation?) {
                 binding.frameLayout.visibility = View.INVISIBLE
+                binding.button.visibility = View.VISIBLE
+                binding.floatingActionButton.isClickable = true
             }
 
             override fun onAnimationRepeat(animation: Animation?) {
@@ -67,25 +86,86 @@ class SearchResultActivity : AppCompatActivity() {
         })
         
         binding = ActivitySearchResultBinding.inflate(layoutInflater)
+        binding.progressBar.visibility = View.VISIBLE
 
-        binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
-            override fun onSwipeLeft() {
-                Log.d("test","LEFT")
+        val intent = getIntent()
+        val str = intent.getStringExtra("search")
+        binding.searchView2.setQuery(str,false)
+
+        binding.floatingActionButton.setOnClickListener {
+            if(!isStatFragOn) {
                 val fragment = supportFragmentManager.beginTransaction()
-                fragment.replace(R.id.frameLayout, itemStatFragment())
+                val itemStatFragment = itemStatFragment()
+                var bundle = Bundle()
+                bundle.putString("search", str)
+                bundle.putInt("min",min)
+                bundle.putInt("max",max)
+                bundle.putInt("avg",avg)
+                itemStatFragment.arguments = bundle
+                fragment.replace(R.id.frameLayout, itemStatFragment)
                 fragment.commit()
                 binding.frameLayout.startAnimation(transLeft)
                 binding.frameLayout.visibility = View.VISIBLE
                 binding.button.visibility = View.INVISIBLE
+                binding.floatingActionButton.setImageResource(R.drawable.leftarrow)
+                isStatFragOn = true
+            }
+            else{
+                binding.frameLayout.startAnimation(transRight)
+                isStatFragOn = false
+                binding.floatingActionButton.isClickable = false
+                binding.floatingActionButton.setImageResource(R.drawable.rightarrow)
+            }
+        }
+
+        binding.button.setOnClickListener {
+            //0 : 기본순 1 : 가격 내림차순 2 : 가격 오름차순
+            _selectedSort = (_selectedSort + 1)%3
+            when(_selectedSort){
+                0->{
+                    binding.button.text = "기본 순서"
+                    carrotItems.sortBy {
+                        it.timeStamp
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+                1->{
+                    binding.button.text = "가격 내림차순"
+                    carrotItems.sortByDescending {
+                        it.price
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+                2->{
+                    binding.button.text = "가격 오름차순"
+                    carrotItems.sortBy{
+                        it.price
+                    }
+                    if(resAdapter != null)
+                        resAdapter.notifyDataSetChanged()
+                }
+            }
+        }
+        binding.searchMain.setOnTouchListener (object:OnSwipeTouchListener(this@SearchResultActivity){
+            override fun onSwipeLeft() {
+                val fragment = supportFragmentManager.beginTransaction()
+                val itemStatFragment = itemStatFragment()
+                var bundle = Bundle()
+                bundle.putString("search", str)
+                itemStatFragment.arguments = bundle
+                fragment.replace(R.id.frameLayout, itemStatFragment)
+                fragment.commit()
+                binding.frameLayout.startAnimation(transLeft)
+                binding.frameLayout.visibility = View.VISIBLE
+                binding.button.visibility = View.INVISIBLE
+                isStatFragOn = true
             }
             override fun onSwipeRight() {
-                Log.d("test","Right")
                 binding.frameLayout.startAnimation(transRight)
             }
         })
-        val intent = getIntent()
-        val str = intent.getStringExtra("search")
-        binding.searchView2.setQuery(str,false)
         if(str != null){
             getData(str)
         }
@@ -99,7 +179,6 @@ class SearchResultActivity : AppCompatActivity() {
                     find = ""
                     return false
                 }
-
                 find = query.toString()
                 getData(find)
                 return false
@@ -114,10 +193,14 @@ class SearchResultActivity : AppCompatActivity() {
 
 
     fun getData(find:String){
-        Log.d("test",find)
         val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.searchresview.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
         binding.searchresview.addItemDecoration(decoration)
+        runOnUiThread {
+            binding.floatingActionButton.visibility = View.INVISIBLE
+        }
+
+        carrotItems.clear()
 
         CoroutineScope(Dispatchers.IO).launch {
             CoroutineScope(Dispatchers.IO).async {
@@ -133,11 +216,16 @@ class SearchResultActivity : AppCompatActivity() {
                 tmploc.indexOf("/_ssgManifest.js\" defer></script>")
             )
 
+            var t1 = System.currentTimeMillis()
+
             CoroutineScope(Dispatchers.IO).async {
                 body =
-                    Jsoup.connect("https://api.bunjang.co.kr/api/1/find_v2.json?q=" + find + "&order=score&page=0&request_id=2023802153409&stat_device=w&n=200&stat_category_required=1&req_ref=search&version=4")
+                    Jsoup.connect("https://api.bunjang.co.kr/api/1/find_v2.json?q=" + find + "&order=score&page=0&request_id=2023802153409&stat_device=w&n=80&stat_category_required=1&req_ref=search&version=4")
                         .ignoreContentType(true).get()
             }.await()
+            var t2 = System.currentTimeMillis()
+            Log.d("bunjang",(t2 - t1).toString())
+
 
             var jsonBody = JSONObject(body.text())
 
@@ -148,27 +236,31 @@ class SearchResultActivity : AppCompatActivity() {
             if (size > items.length()) {
                 size = items.length()
             }
-            for (i: Int in 0 until size) {
+            for (i: Int in 0 until items.length()) {
                 val j = items.getJSONObject(i)
                 val name = j.getString("name")
                 val price = j.getInt("price")
                 val imgLink = j.getString("product_image")
-                val time = j.getInt("update_time")
+                val fav = j.getInt("num_faved")
                 val _region = j.getString("location")
                 var region: ArrayList<String> = arrayListOf()
                 region.add(_region)
 
                 val id = j.getString("pid")
-                thunderItems.add(itemData(name, price, imgLink, time, region, id,"thunder"))
+                thunderItems.add(itemData(name, price, imgLink, fav, region, id,"thunder"))
             }
 
             var joongoItems: ArrayList<itemData> = arrayListOf()
-
+            t1 = System.currentTimeMillis()
             CoroutineScope(Dispatchers.IO).async {
                 body =
-                    Jsoup.connect("https://web.joongna.com/_next/data/" + data + "/search/" + find + ".json?keyword=" + find)
+                    Jsoup.connect("https://web.joongna.com/_next/data/" + data + "/search/" + find + ".json?keyword=" + find + "&page=1")
                         .ignoreContentType(true).get()
             }.await()
+            t2 = System.currentTimeMillis()
+            Log.d("joongna",(t2 - t1).toString())
+
+
 
             jsonBody = JSONObject(body.text())
             items = jsonBody.getJSONObject("pageProps")
@@ -188,9 +280,7 @@ class SearchResultActivity : AppCompatActivity() {
                 val name = j.getString("title")
                 val price = j.getInt("price")
                 val imgLink = j.getString("url")
-                val _time = j.getString("sortDate")//2023-08-03 16:06:34
-                val sdf = SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.KOREA)
-                val time = sdf.parse(_time)?.time?.div(1000)
+                val fav = j.getInt("wishCount")
                 val _region = j.getJSONArray("locationNames")
                 val id = j.getString("seq")
 
@@ -198,46 +288,43 @@ class SearchResultActivity : AppCompatActivity() {
                 for (i: Int in 0 until _region.length()) {
                     region.add(_region.getString(i))
                 }
-
-                if (time != null) {
-                    joongoItems.add(itemData(name, price, imgLink, time.toInt(), region, id,"joongo"))
-                }
+                joongoItems.add(itemData(name, price, imgLink, fav, region, id,"joongo"))
             }
 
-            var carrotItems = arrayListOf<itemData>()
-            for (j: Int in 1 until size / 10 + 1) {
+            for (j: Int in 1 until 4) {
+                t1 = System.currentTimeMillis()
                 body =
                     Jsoup.connect("https://www.daangn.com/search/" + find + "/more/flea_market?page=" + j.toString())
                         .ignoreContentType(true).get()
-                var i = 0
-                lateinit var body2:Document
-                while (true){
-                    body2 = body
-                    i++
-                    //title
-                    var tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > div > span.article-title")
+                var temp = body.select("span.article-title")
+                val name = arrayListOf<String>()
+                val img = arrayListOf<String>()
+                val region = arrayListOf<String>()
+                val price2 = arrayListOf<Int>()
+                val time = arrayListOf<Int>()
+                val id = arrayListOf<String>()
 
-                    if (tmp.isEmpty()) {
-                        break
-                    }
+                name.addAll(temp.eachText())
 
-                    val title = tmp.text()
-                    //imglink
-                    var tmp2 =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.card-photo > img")
-                            .attr("src").toString()
-                    val imglink = tmp2
+                temp = body.select("div.card-photo > img")
+                for(k:Int in 0 until temp.size){
+                    img.add(temp.attr("src"))
+                }
 
-                    //location
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-region-name")
-                    val location = arrayListOf<String>()
-                    location.add(tmp.text())
-                    //price
-                    tmp =
-                        body2.select("body > article:nth-child(" + i.toString() + ") > a > div.article-info > p.article-price")
-                    var price = tmp.text()
+                //Log.d("img", img.toString())
+                temp = body.select("body > article > a")
+                for(k:Int in 0 until temp.size){
+                    id.add(temp.attr("href"))
+                }
+                //Log.d("id",id.toString())
+
+                temp = body.select("p.article-region-name")
+                region.addAll(temp.eachText())
+
+                temp = body.select("p.article-price")
+               // Log.d("price",temp.toString())
+                for(k:Int in 0 until temp.size) {
+                    var price = temp.get(k).text()
                     if (price.contains(",")) {
                         price = price.replace(",", "")
                     }
@@ -253,77 +340,131 @@ class SearchResultActivity : AppCompatActivity() {
                     if (price.contains(" ")) {
                         price = price.replace(" ", "")
                     }
-                    val _intPrice = price.toInt()
-
-                    //getTimeStamp
-                    tmp2 = body2.select("body > article:nth-child(1) > a").attr("href")
-                    body2 = Jsoup.connect("https://www.daangn.com"+tmp2).get()
-                    tmp2 = body2.select("#article-category > time").text()
-                    var timestamp = 0
-                    if(tmp2.contains("시간")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*3600000).toInt()
+                    var _intPrice by Delegates.notNull<Int>()
+                    try {
+                        _intPrice = price.toInt()
+                    } catch (e: Exception) {
+                        //e.printStackTrace()
+                        _intPrice = 0
                     }
-                    else if(tmp2.contains("분")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*60000).toInt()
-                    }
-                    else if(tmp2.contains("초")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*1000).toInt()
-                    }
-                    else if(tmp2.contains("일")){
-                        tmp2 = tmp2.replace(("[^0-9]").toRegex(), "")
-                        timestamp = (System.currentTimeMillis() - tmp2.toInt()*86400000).toInt()
-                    }
-                    carrotItems.add(itemData(title, _intPrice, imglink, timestamp, location, "0","carrot"))
+                    price2.add(_intPrice)
                 }
-            }
-            post(carrotItems, thunderItems, joongoItems, find, size)
 
-            Log.d("sizeC",carrotItems.size.toString())
-            Log.d("sizeT",thunderItems.size.toString())
-            Log.d("sizeJ",joongoItems.size.toString())
+
+                for(z:Int in 0 until price2.size){
+                    carrotItems.add(
+                        itemData(name.get(z),
+                            price2.get(z),
+                            img.get(z),
+                            0,
+                            arrayListOf(region.get(z)),
+                            id.get(z),
+                            "carrot"
+                        )
+                    )
+                }
+                t2 = System.currentTimeMillis()
+                Log.d("daangn",(t2-t1).toString())
+            }
+
+            binding.progressBar.visibility = View.INVISIBLE
+            post(carrotItems, thunderItems, joongoItems, find)
             carrotItems.addAll(thunderItems)
             carrotItems.addAll(joongoItems)
 
-            val comp : Comparator<itemData> = compareBy{
+            carrotItems.sortByDescending{
                 it.timeStamp
             }
-            val finalList = carrotItems.sortedWith(comp)
+            //find min max sum
+            max = 0
+            sum = 0
+            min = Int.MAX_VALUE
+
+            carrotItems.forEach {
+                sum += it.price
+                if(min > it.price )
+                    min = it.price
+                if(max < it.price)
+                    max = it.price
+            }
+            avg = sum / carrotItems.size
             runOnUiThread {
                 resAdapter = SearchResultAdapter(carrotItems)
                 resAdapter.itemClickListener = object:SearchResultAdapter.OnItemClickListener{
+                    @SuppressLint("SimpleDateFormat")
                     override fun OnItemClick(item: itemData) {
                         val fragment = supportFragmentManager.beginTransaction()
+                        val itemInfoFragment = itemInfoFragment()
                         binding.frameLayout.visibility = View.VISIBLE
                         binding.button.visibility = View.INVISIBLE
-                        fragment.replace(R.id.frameLayout, itemInfoFragment()).addToBackStack(null)
+                        var bundle = Bundle()
+                        bundle.putString("title",item.name)
+                        bundle.putInt("price",item.price)
+
+                        when(item.origin){
+                            "carrot"->bundle.putString("url","https://daangn.com"+item.id)
+                            "thunder"->bundle.putString("url","https://m.bunjang.co.kr/products/"+item.id)
+                            "joongo"->bundle.putString("url","https://web.joongna.com/product/"+item.id)
+                        }
+
+                        if(item.region.size != 0 ) {
+                            bundle.putString("addr", item.region.get(0))
+                        }
+                        bundle.putString("imglink",item.imgLink)
+                        val format = SimpleDateFormat("yyyy.MM.dd")
+
+                        bundle.putString("timestamp",format.format(item.timeStamp))
+                        itemInfoFragment.arguments = bundle
+                        fragment.replace(R.id.frameLayout, itemInfoFragment).addToBackStack(null)
                         fragment.commit()
                     }
                 }
                 binding.searchresview.adapter = resAdapter
                 resAdapter.notifyDataSetChanged()
+                binding.floatingActionButton.visibility = View.VISIBLE
             }
         }
     }
 
-    private fun post(carrotItems: ArrayList<itemData>, thunderItems: ArrayList<itemData>, joongoItems: ArrayList<itemData>, keyword:String, size:Int) {
+    private fun post(carrotItems: ArrayList<itemData>, thunderItems: ArrayList<itemData>, joongoItems: ArrayList<itemData>, keyword:String) {
         val client = OkHttpClient()
-        var reqBodyBuilder = FormBody.Builder()
-            .add("keyword",keyword)
+        var bodyBuilder = FormBody.Builder()
+        val testArr = arrayListOf<Int>()
+        //bodyBuilder.add("keyword",keyword)
 
         for(i:Int in 0 until carrotItems.size){
-            reqBodyBuilder.add("carrot["+i.toString()+"]",carrotItems.get(i).price.toString())
+            bodyBuilder.add("carrot", carrotItems.get(i).price.toString())
+            //testArr.add(carrotItems.get(i).price)
         }
+
+        //bodyBuilder.add("carrot",testArr.toString())
+        testArr.clear()
+
         for(i:Int in 0 until thunderItems.size){
-            reqBodyBuilder.add("thunder["+i.toString()+"]",thunderItems.get(i).price.toString())
+            bodyBuilder.add("thunder", thunderItems.get(i).price.toString())
+            //testArr.add(thunderItems.get(i).price)
         }
+        //bodyBuilder.add("thunder",testArr.toString())
+        testArr.clear()
+
         for(i:Int in 0 until joongoItems.size){
-            reqBodyBuilder.add("joongo["+i.toString()+"]",joongoItems.get(i).price.toString())
+            bodyBuilder.add("joongna", joongoItems.get(i).price.toString())
+            //testArr.add(joongoItems.get(i).price)
         }
-        var reqBody = reqBodyBuilder.build()
-        val req = Request.Builder().url(server_url+"/statistics/"+keyword+"?size="+size).post(reqBody).build()
+        //bodyBuilder.add("joongna",testArr.toString())
+
+        var reqBody = bodyBuilder.build()
+        val req = Request.Builder().url(server_url+"/statistics/"+keyword).post(reqBody).build()
+        client.newCall(req).enqueue(object:Callback{
+            override fun onFailure(call: Call, e: IOException) {
+                e.printStackTrace()
+            }
+
+            override fun onResponse(call: Call, response: Response) {
+                Log.d("POST RES", response.toString())
+            }
+
+        })
     }
 
     fun get(keyword:String, size:Int): ResponseBody {
@@ -342,14 +483,14 @@ class SearchResultActivity : AppCompatActivity() {
                     override fun onResponse(call: Call, response: Response) {
                         response.use {
                             if (!response.isSuccessful) throw IOException("Unexpected code")
-                            Log.d("test", response.body!!.string())
+                            //Log.d("test", response.body!!.string())
                             body = response.body!!
                         }
                     }
                 })
             }.await()
         }
-        Log.d("test", body.string())
+        //Log.d("test", body.string())
         return body
     }
 }
