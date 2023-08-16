@@ -65,7 +65,8 @@ class itemStatFragment: Fragment() {
 
         activity.runOnUiThread {
             binding.textView6.text = bundle.getString("search")+"에 대한 검색결과.."
-            binding.avgText1.text = DecimalFormat("#,###").format(bundle.getInt("avg"))+"원"
+            binding.maxText1.setTextColor(Color.RED)
+            binding.minText1.setTextColor(Color.parseColor("#00bde3"))
             binding.maxText1.text = DecimalFormat("#,###").format(bundle.getInt("max"))+"원"
             binding.minText1.text = DecimalFormat("#,###").format(bundle.getInt("min"))+"원"
         }

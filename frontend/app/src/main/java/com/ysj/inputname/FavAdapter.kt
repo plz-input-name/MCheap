@@ -8,10 +8,7 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.ysj.inputname.databinding.FavrowBinding
 import com.ysj.inputname.databinding.TextrowBinding
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.launch
+import kotlinx.coroutines.*
 import org.json.JSONArray
 import org.jsoup.Jsoup
 import java.text.DecimalFormat
@@ -20,6 +17,8 @@ import java.time.format.DateTimeFormatter
 
 class FavAdapter(val data:ArrayList<String>): RecyclerView.Adapter<FavAdapter.ViewHolder>() {
     val server_url = "http://52.78.214.149:3000"
+    lateinit var activity: FavActivity
+
     interface OnItemClickListener{
         fun OnItemClick(text:String)
     }
@@ -35,6 +34,7 @@ class FavAdapter(val data:ArrayList<String>): RecyclerView.Adapter<FavAdapter.Vi
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = FavrowBinding.inflate(LayoutInflater.from(parent.context),parent,false)
+        activity = parent.context as FavActivity
         return ViewHolder(view)
     }
 
@@ -86,39 +86,40 @@ class FavAdapter(val data:ArrayList<String>): RecyclerView.Adapter<FavAdapter.Vi
             var j2 = DecimalFormat("#,###").format(j)
             var t2 = DecimalFormat("#,###").format(t)
 
-            if(c>0){
+            if (c > 0) {
                 c2 = "▲ " + c2
                 holder.binding.carrotText.setTextColor(Color.RED)
-            }else if(c<0){
+            } else if (c < 0) {
                 c2 = "▼ " + c2
                 holder.binding.carrotText.setTextColor(Color.parseColor("#00bde3"))
-            }else{
+            } else {
                 c2 = "-"
             }
 
-            if(j>0){
+            if (j > 0) {
                 j2 = "▲ " + j2
                 holder.binding.joongnaText.setTextColor(Color.RED)
-            }else if(j<0){
+            } else if (j < 0) {
                 j2 = "▼ " + j2
                 holder.binding.joongnaText.setTextColor(Color.parseColor("#00bde3"))
-            }else{
+            } else {
                 j2 = "-"
             }
 
-            if(t>0){
+            if (t > 0) {
                 t2 = "▲ " + t2
                 holder.binding.thunderText.setTextColor(Color.RED)
-            }else if(t<0){
+            } else if (t < 0) {
                 t2 = "▼ " + t2
                 holder.binding.thunderText.setTextColor(Color.parseColor("#00bde3"))
-            }else{
+            } else {
                 t2 = "-"
             }
-
-            holder.binding.carrotText.text = c2
-            holder.binding.joongnaText.text = j2
-            holder.binding.thunderText.text = t2
+            activity.runOnUiThread {
+                holder.binding.carrotText.text = c2
+                holder.binding.joongnaText.text = j2
+                holder.binding.thunderText.text = t2
+            }
         }
        // holder.binding.textView2.text = "# "+ data[position] + " "
     }
