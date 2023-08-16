@@ -23,8 +23,9 @@ MZ세대는 영리하며 효율을 중시합니다. 물건을 고를 때도 가�
 ## Tech Stack
 
 - Andoriod (Native - Kotlin)
-- expressjs- AWS EC2
-- mySQL - AWS RDS
+- expressjs
+- mySQL
+- AWS EC2
 
 ### Collaborating
 
