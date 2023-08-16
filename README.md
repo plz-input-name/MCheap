@@ -10,10 +10,10 @@ MZ세대는 영리하며 효율을 중시합니다. 물건을 고를 때도 가�
 
 ### 목차
 
-- 최근 검색어
-- 매물 모아보기
-- 매물 추이/통계
-- 즐겨찾기
+- [최근 검색어](https://github.com/plz-input-name/MCheap#%EC%B5%9C%EA%B7%BC-%EA%B2%80%EC%83%89%EC%96%B4)
+- [매물 모아보기](https://github.com/plz-input-name/MCheap#%EB%A7%A4%EB%AC%BC-%EB%AA%A8%EC%95%84%EB%B3%B4%EA%B8%B0)
+- [매물 추이/통계](https://github.com/plz-input-name/MCheap#%EB%A7%A4%EB%AC%BC-%EC%B6%94%EC%9D%B4%ED%86%B5%EA%B3%84)
+- [즐겨찾기](https://github.com/plz-input-name/MCheap#%EC%A6%90%EA%B2%A8%EC%B0%BE%EA%B8%B0)
 
 ### 최근 검색어
 
@@ -25,13 +25,17 @@ MZ세대는 영리하며 효율을 중시합니다. 물건을 고를 때도 가�
 
 - 매물 정보는 Client에서 CSS selector와 API hooking을 활용해 Web Scraping으로 수집합니다.
 
+![img](https://github.com/plz-input-name/MCheap/blob/main/images/001.jpeg?raw=true)
+
 ### 매물 추이/통계
 
 - 검색마다 결과의 평균 가격을 플랫폼별로 기록하여 가격 변동 추이를 제공합니다. 최근 가격이 하락 중이라면 제품 구매를 조금 더 미루는 신중한 소비가 가능합니다. 검색마다 데이터를 기록하기 때문에 인기가 많은 품목일수록 더 정확하게 추이를 파악할 수 있습니다.
 
-- 낙관적 락을 활용한 1h 단위 throttling으로 Data를 조절합니다. ([code](https://github.com/plz-input-name/MCheap/blob/fb9c584ef05b9b37aef764a4e693baeac69d1f44/backend/service/statistics.js#L29C7-L38C8))
+- [낙관적 락을 활용한 1h 단위 throttling](https://github.com/plz-input-name/MCheap/blob/fb9c584ef05b9b37aef764a4e693baeac69d1f44/backend/service/statistics.js#L29C7-L38C8)으로 Data를 조절합니다.
 
 - IQR를 통한 이상치(Outlier) 제거로 더 정확한 통계를 제공합니다.
+
+![img](https://github.com/plz-input-name/MCheap/blob/main/images/002.jpeg?raw=true)
 
 ### 즐겨찾기
 
