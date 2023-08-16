@@ -24,9 +24,13 @@ class SearchResultAdapter(val data:ArrayList<itemData>): RecyclerView.Adapter<Se
             binding.textView9.setOnClickListener {
                 itemClickListener?.OnItemClick(data[adapterPosition])
             }
+            binding.imageView2.setOnClickListener {
+                itemClickListener2?.OnItemClick(data[adapterPosition])
+            }
         }
     }
     var itemClickListener:OnItemClickListener?=null
+    var itemClickListener2:OnItemClickListener?=null
 
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {

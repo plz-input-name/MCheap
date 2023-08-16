@@ -41,7 +41,9 @@ class itemStatFragment: Fragment() {
     override fun onResume() {
         super.onResume()
         binding.progressBar2.visibility = View.VISIBLE
-        //binding.keywordView.text = bundle?.getString("search")
+        if(arguments!= null) {
+            bundle = arguments as Bundle
+        }
         getData()
     }
     @SuppressLint("SetTextI18n")
@@ -53,17 +55,13 @@ class itemStatFragment: Fragment() {
         binding = FragmentItemStatBinding.inflate(inflater,container,false)
         activity = context as SearchResultActivity
 
-        //val decoration = DividerItemDecoration(activity, LinearLayoutManager.VERTICAL)
         binding.RecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        //binding.RecyclerView.addItemDecoration(decoration)
-        
-        binding.carrotChk.setOnCheckedChangeListener { compoundButton, b ->  }
+
         if(arguments!= null) {
             bundle = arguments as Bundle
         }
 
         activity.runOnUiThread {
-            //binding.keywordView.text = bundle.getString("search")
             binding.textView6.text = bundle.getString("search")+"에 대한 검색결과.."
             binding.avgText1.text = DecimalFormat("#,###").format(bundle.getInt("avg"))+"원"
             binding.maxText1.text = DecimalFormat("#,###").format(bundle.getInt("max"))+"원"
@@ -93,7 +91,8 @@ class itemStatFragment: Fragment() {
                         val carrot = jobject.getInt("carrot")
                         val thunder = jobject.getInt("thunder")
                         val joongna = jobject.getInt("joongna")
-                        val date = jobject.getString("collected_at")
+                        var date = jobject.getString("collected_at")
+
                         if(str!=null)
                             nodeArr.add(nodeData(str, carrot, thunder,joongna,date))
                         else{
@@ -110,11 +109,13 @@ class itemStatFragment: Fragment() {
                 LocalDate.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
             }
 
+
             activity.runOnUiThread {
                 var statResultAdapter = statResultAdapter(nodeArr)
                 binding.RecyclerView.adapter = statResultAdapter
                 statResultAdapter.notifyDataSetChanged()
                 binding.progressBar2.visibility = View.INVISIBLE
+
                 if(nodeArr.size>1) {
                     var k = nodeArr.size-1
                     val entry_carrot = mutableListOf<Entry>() //y
@@ -127,6 +128,8 @@ class itemStatFragment: Fragment() {
                         var it = nodeArr.get(k)
                         if(k == nodeArr.size-1){
                             entry_carrot.add(Entry(cnt.toFloat(), it.carrotPrice.toFloat()))
+                            entry_thunder.add(Entry(cnt.toFloat(), it.thunderPrice.toFloat()))
+                            entry_joongna.add(Entry(cnt.toFloat(), it.joongoPrice.toFloat()))
                             firstDate = LocalDateTime.parse(it.date, DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
                             cnt++
                         }else{
@@ -154,6 +157,7 @@ class itemStatFragment: Fragment() {
                     lineDataSetJ.lineWidth = 2f
                     lineDataSetJ.setDrawValues(false)
 
+
                     val chartData = LineData()
                     chartData.addDataSet(lineDataSetC)
                     chartData.addDataSet(lineDataSetT)
@@ -165,6 +169,19 @@ class itemStatFragment: Fragment() {
                     binding.carrotChart.axisRight.setDrawLabels(false)
                     binding.carrotChart.description.isEnabled=false
                     binding.carrotChart.invalidate()
+
+                    binding.carrotChk.setOnCheckedChangeListener { compoundButton, isChecked ->
+                        lineDataSetC.isVisible = isChecked
+                        binding.carrotChart.invalidate()
+                    }
+                    binding.thunderChk.setOnCheckedChangeListener { compoundButton, isChecked ->
+                        lineDataSetT.isVisible = isChecked
+                        binding.carrotChart.invalidate()
+                    }
+                    binding.joongnaChk.setOnCheckedChangeListener { compoundButton, isChecked ->
+                        lineDataSetJ.isVisible = isChecked
+                        binding.carrotChart.invalidate()
+                    }
                 }
             }
         }
