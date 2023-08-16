@@ -32,8 +32,13 @@ exports.makeStatistics = async (req, res, next) => {
   const min = q1 - iqr * THRESHOLD;
 
   const calcAvg = (arr) => {
+    arr = arr.map((i) => {
+      //console.log(typeof i);
+      return Number(i);
+    });
     const filtered = arr.filter((price) => price < max && price > min);
     const sum = filtered.reduce((sum, curr) => (sum += curr));
+    
     return Math.ceil(sum / filtered.length);
   };
 
