@@ -24,14 +24,14 @@ exports.makeStatistics = async (req, res, next) => {
   const { carrot, thunder, joongna } = req.body;
   const conn = await pool.getConnection();
 
-  // const result = await search.find(conn, keyword, 1);
-  // if (result[0][0]?.collected_at) {
-  //   if (
-  //     Date.now() - new Date(result[0][0].collected_at).valueOf() <
-  //     1000 * 60 * 60
-  //   )
-  //     return res.status(204).send();
-  // }
+  const result = await search.find(conn, keyword, "1");
+  if (result[0][0]?.collected_at) {
+    if (
+      Date.now() - new Date(result[0][0].collected_at).valueOf() <
+      1000 * 60 * 60
+    )
+      return res.status(204).send();
+  }
 
   const total = [...carrot, ...thunder, ...joongna].sort((a, b) => a - b);
   const q1 = total[Math.floor(total.length * 0.25)];
@@ -43,12 +43,11 @@ exports.makeStatistics = async (req, res, next) => {
 
   const calcAvg = (arr) => {
     arr = arr.map((i) => {
-      //console.log(typeof i);
       return Number(i);
     });
     const filtered = arr.filter((price) => price < max && price > min);
     const sum = filtered.reduce((sum, curr) => (sum += curr));
-    
+
     return Math.ceil(sum / filtered.length);
   };
 
