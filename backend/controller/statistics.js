@@ -24,15 +24,6 @@ exports.makeStatistics = async (req, res, next) => {
   const { carrot, thunder, joongna } = req.body;
   const conn = await pool.getConnection();
 
-  const result = await search.find(conn, keyword, "1");
-  if (result[0][0]?.collected_at) {
-    if (
-      Date.now() - new Date(result[0][0].collected_at).valueOf() <
-      1000 * 60 * 60
-    )
-      return res.status(204).send();
-  }
-
   const total = [...carrot, ...thunder, ...joongna].sort((a, b) => a - b);
   const q1 = total[Math.floor(total.length * 0.25)];
   const q3 = total[Math.ceil(total.length * 0.75)];
@@ -52,6 +43,8 @@ exports.makeStatistics = async (req, res, next) => {
   };
 
   try {
+    conn.beginTransaction();
+
     search.add(
       conn,
       keyword,
@@ -59,10 +52,23 @@ exports.makeStatistics = async (req, res, next) => {
       calcAvg(thunder),
       calcAvg(joongna)
     );
+    const result = await search.find(conn, keyword, "2");
+    if (result[0].length > 1) {
+      if (
+        Date.parse(result[0][0].collected_at) -
+          Date.parse(result[0][1].collected_at) <
+        1000 * 60 * 60
+      )
+        throw Error("throttle");
+    }
+
+    conn.commit();
     return res.status(204).send();
   } catch (err) {
     console.error(err.message);
     // error 원인에 따른 code, message 세분화 필요
+
+    conn.rollback();
     return next(createError(500, "Internal Server Error"));
   } finally {
     conn.release();
