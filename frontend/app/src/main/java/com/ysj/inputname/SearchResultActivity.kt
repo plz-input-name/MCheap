@@ -63,10 +63,8 @@ class SearchResultActivity : AppCompatActivity() {
 
 
     lateinit var body: Document
-    lateinit var resData:String
 
     override fun onResume() {
-        binding.button.visibility = View.VISIBLE
         super.onResume()
     }
     @SuppressLint("ClickableViewAccessibility")
@@ -95,7 +93,7 @@ class SearchResultActivity : AppCompatActivity() {
         binding.progressBar.visibility = View.VISIBLE
 
         val intent = getIntent()
-        val str = intent.getStringExtra("search")
+        var str = intent.getStringExtra("search").toString()
         binding.searchView2.setQuery(str,false)
 
         binding.floatingActionButton.setOnClickListener {

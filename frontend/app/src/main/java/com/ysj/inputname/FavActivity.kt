@@ -1,7 +1,9 @@
 package com.ysj.inputname
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ysj.inputname.databinding.ActivityFavBinding
@@ -22,6 +24,11 @@ class FavActivity : AppCompatActivity() {
             }
             val adapter = FavAdapter(favArr)
             binding.favView.adapter = adapter
+        }
+        binding.textView11.setOnClickListener {
+            val _intent = Intent(this, MainActivity::class.java)
+            startActivity(_intent)
+            finish()
         }
         setContentView(binding.root)
     }
