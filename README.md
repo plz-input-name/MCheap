@@ -47,6 +47,11 @@ MZ세대는 영리하며 효율을 중시합니다. 물건을 고를 때도 가�
 - [번개장터](https://m.bunjang.co.kr/)
 - [당근마켓](https://www.daangn.com/)
 
+## Service
+
+- [apk](https://github.com/plz-input-name/MCheap/blob/main/mcheap_v1.0_release.apk)
+- [server](http://52.78.214.149:3000)
+
 ## Tech Stack
 
 - Androiod (Native - Kotlin)
