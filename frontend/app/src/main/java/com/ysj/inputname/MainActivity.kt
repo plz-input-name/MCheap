@@ -24,6 +24,12 @@ class MainActivity : AppCompatActivity() {
     val launcher = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){
     }
 
+    override fun onResume() {
+        CoroutineScope(Dispatchers.IO).launch {
+            getKeyword()
+        }
+        super.onResume()
+    }
     override fun onCreate(savedInstanceState: Bundle?) {
         binding = ActivityMainBinding.inflate(layoutInflater)
         super.onCreate(savedInstanceState)
