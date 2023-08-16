@@ -29,7 +29,10 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.KeywordView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
+        binding.KeywordView.addItemDecoration(decoration)
+
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 val intent = Intent(this@MainActivity, SearchResultActivity::class.java)
@@ -52,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         val keywordArr = arrayListOf<String>()
         try {
             val arr = JSONArray(
-                Jsoup.connect(server_url + "/keywords?size=10").ignoreContentType(true).get().body()
+                Jsoup.connect(server_url + "/keywords?size=5").ignoreContentType(true).get().body()
                     .text()
             )
             for (i: Int in 0 until arr.length()) {

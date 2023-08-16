@@ -35,6 +35,6 @@ class keywordAdapter(val data:ArrayList<String>): RecyclerView.Adapter<keywordAd
     }
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
-        holder.binding.textView2.text = "▶  "+data[position]
+        holder.binding.textView2.text = "# "+ data[position] + " "
     }
 }

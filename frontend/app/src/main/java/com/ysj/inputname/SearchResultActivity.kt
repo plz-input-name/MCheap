@@ -1,6 +1,8 @@
 package com.ysj.inputname
 
 import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -59,7 +61,6 @@ class SearchResultActivity : AppCompatActivity() {
     lateinit var resData:String
 
     override fun onResume() {
-        binding.progressBar.visibility = View.VISIBLE
         binding.button.visibility = View.VISIBLE
         super.onResume()
     }
@@ -390,6 +391,25 @@ class SearchResultActivity : AppCompatActivity() {
             avg = sum / carrotItems.size
             runOnUiThread {
                 resAdapter = SearchResultAdapter(carrotItems)
+                resAdapter.itemClickListener2 = object:SearchResultAdapter.OnItemClickListener{
+                    override fun OnItemClick(item: itemData) {
+                        when(item.origin){
+                            "carrot"-> {
+                                val _intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://www.daangn.com/"))
+                                startActivity(_intent)
+                            }
+                            "thunder"-> {
+                                val _intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://m.bunjang.co.kr/"))
+                                startActivity(_intent)
+                            }
+                            "joongo"-> {
+                                val _intent = Intent(Intent.ACTION_VIEW, Uri.parse("https://web.joongna.com/"))
+                                startActivity(_intent)
+                            }
+                        }
+                    }
+
+                }
                 resAdapter.itemClickListener = object:SearchResultAdapter.OnItemClickListener{
                     @SuppressLint("SimpleDateFormat")
                     override fun OnItemClick(item: itemData) {

@@ -7,6 +7,17 @@
     android:padding="40dp"
     tools:context=".MainActivity">
 
+    <!--<ImageButton
+        android:id="@+id/favButton"
+        android:layout_width="50dp"
+        android:layout_height="40dp"
+        android:background="@drawable/roundnemostroke"
+        android:padding="10dp"
+        android:tint="#FFE81A"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/baseline_star_24" />-->
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -53,10 +64,33 @@
         android:layout_width="match_parent"
         android:layout_height="300dp"
         android:layout_marginTop="10dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginEnd="20dp"
         android:padding="10dp"
         app:layout_constraintTop_toBottomOf="@+id/textView4"
-        />
+        tools:layout_editor_absoluteX="60dp" />
+
+    <TextView
+        android:id="@+id/textView14"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="5dp"
+        android:text="Copyright 2023. plz input name all right reserved."
+        android:textAlignment="center"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/floatingActionButton2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="10dp"
+        android:layout_marginBottom="40dp"
+        android:clickable="true"
+        android:src="@drawable/baseline_star_24"
+        app:tint="#FFEB3B"
+        app:backgroundTint="#D8D8D8"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
