@@ -29,11 +29,7 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
-        //val decoration = DividerItemDecoration(this, LinearLayoutManager.VERTICAL)
         binding.KeywordView.layoutManager = LinearLayoutManager(this, LinearLayoutManager.VERTICAL, false)
-        //binding.KeywordView.addItemDecoration(decoration)
-
-        val client = OkHttpClient()
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 val intent = Intent(this@MainActivity, SearchResultActivity::class.java)
@@ -47,6 +43,7 @@ class MainActivity : AppCompatActivity() {
             }
 
         })
+
         CoroutineScope(Dispatchers.IO).launch {
             getKeyword()
         }

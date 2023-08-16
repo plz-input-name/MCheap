@@ -253,6 +253,34 @@
 
             <LinearLayout
                 android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="5dp"
+                android:orientation="horizontal">
+
+                <CheckBox
+                    android:id="@+id/carrotChk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="당근마켓" />
+
+                <CheckBox
+                    android:id="@+id/thunderChk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="번개장터" />
+
+                <CheckBox
+                    android:id="@+id/joongnaChk"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="중고나라" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="150dp"
                 android:padding="10dp"
                 android:orientation="horizontal">

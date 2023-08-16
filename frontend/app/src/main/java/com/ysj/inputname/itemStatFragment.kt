@@ -12,6 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentResultListener
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.github.mikephil.charting.components.Description
 import com.github.mikephil.charting.data.Entry
 import com.github.mikephil.charting.data.LineData
 import com.github.mikephil.charting.data.LineDataSet
@@ -52,9 +53,11 @@ class itemStatFragment: Fragment() {
         binding = FragmentItemStatBinding.inflate(inflater,container,false)
         activity = context as SearchResultActivity
 
-        val decoration = DividerItemDecoration(activity, LinearLayoutManager.VERTICAL)
+        //val decoration = DividerItemDecoration(activity, LinearLayoutManager.VERTICAL)
         binding.RecyclerView.layoutManager = LinearLayoutManager(activity, LinearLayoutManager.VERTICAL, false)
-        binding.RecyclerView.addItemDecoration(decoration)
+        //binding.RecyclerView.addItemDecoration(decoration)
+        
+        binding.carrotChk.setOnCheckedChangeListener { compoundButton, b ->  }
         if(arguments!= null) {
             bundle = arguments as Bundle
         }
@@ -135,32 +138,33 @@ class itemStatFragment: Fragment() {
                         }
                         k--
                     }
-                    val lineDataSetC = LineDataSet(entry_carrot,"entries")
+                    val lineDataSetC = LineDataSet(entry_carrot,"당근마켓")
                     lineDataSetC.color = Color.rgb(255,196,0)
                     lineDataSetC.setCircleColor(Color.rgb(255,196,0))
+                    lineDataSetC.lineWidth = 2f
                     lineDataSetC.setDrawValues(false)
-                    val lineDataSetT = LineDataSet(entry_thunder,"entries")
+                    val lineDataSetT = LineDataSet(entry_thunder,"번개장터")
                     lineDataSetT.color = Color.rgb(255,67,67)
                     lineDataSetT.setCircleColor(Color.rgb(255,67,67))
+                    lineDataSetT.lineWidth = 2f
                     lineDataSetT.setDrawValues(false)
-                    val lineDataSetJ = LineDataSet(entry_joongna,"entries")
+                    val lineDataSetJ = LineDataSet(entry_joongna,"중고나라")
                     lineDataSetJ.color = Color.rgb(15,225,0)
                     lineDataSetJ.setCircleColor(Color.rgb(15,225,0))
+                    lineDataSetJ.lineWidth = 2f
                     lineDataSetJ.setDrawValues(false)
-
 
                     val chartData = LineData()
                     chartData.addDataSet(lineDataSetC)
                     chartData.addDataSet(lineDataSetT)
                     chartData.addDataSet(lineDataSetJ)
+
                     binding.carrotChart.xAxis.setDrawLabels(false)
                     binding.carrotChart.data = chartData
+                    binding.carrotChart.axisLeft.setDrawLabels(false)
+                    binding.carrotChart.axisRight.setDrawLabels(false)
+                    binding.carrotChart.description.isEnabled=false
                     binding.carrotChart.invalidate()
-
-
-                    //binding.carrotText1.text = DecimalFormat("#,###").format(nodeArr.get(0).carrotPrice - nodeArr.get(1).carrotPrice)+"원"
-                    //binding.thunderText1.text = DecimalFormat("#,###").format(nodeArr.get(0).thunderPrice - nodeArr.get(1).thunderPrice)+"원"
-                    //binding.joongnaText1.text = DecimalFormat("#,###").format(nodeArr.get(0).joongoPrice - nodeArr.get(1).joongoPrice)+"원"
                 }
             }
         }
